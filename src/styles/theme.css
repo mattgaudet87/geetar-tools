@@ -107,12 +107,52 @@ a {
   color: var(--text-muted-3);
 }
 
-/* Shared tool-page header: back button + brand mark. */
+/* Shared tool-page header: back button + tool icon (left), centered title. */
 .gt-toolhead {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 16px;
   margin-bottom: 30px;
+}
+.gt-toolhead-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-self: start;
+}
+.gt-toolhead-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--control-bg-2);
+  border: 1px solid var(--control-border-2);
+  color: var(--accent-bright);
+  flex-shrink: 0;
+}
+.gt-toolhead-title {
+  margin: 0;
+  justify-self: center;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 25px;
+  letter-spacing: -0.02em;
+  color: #f3f6fa;
+}
+.gt-toolhead-sep {
+  color: var(--text-muted-3);
+  margin: 0 2px;
+}
+.gt-toolhead-name {
+  color: var(--accent-bright);
+}
+@media (max-width: 560px) {
+  .gt-toolhead-title {
+    font-size: 19px;
+  }
 }
 .gt-back {
   display: inline-flex;
@@ -127,6 +167,7 @@ a {
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 0.03em;
+  white-space: nowrap;
   transition: border-color 0.12s ease, color 0.12s ease;
 }
 .gt-back:hover {

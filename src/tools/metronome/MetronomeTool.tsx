@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
+import { MetronomeIcon } from '../../shared/icons'
 import './metronome.css'
 
 const MIN_BPM = 40
@@ -135,7 +136,7 @@ export function MetronomeTool() {
 
   return (
     <div className="mt-page">
-      <ToolHeader wordmark="Geetar Tool" />
+      <ToolHeader name="Metronome" icon={<MetronomeIcon />} />
 
       <div className="mt-card">
         <div className="mt-term">{tempoTerm(bpm)}</div>

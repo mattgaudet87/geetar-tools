@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
+import { ScalesIcon } from '../../shared/icons'
 import { MATERIALS, MATERIAL_NAMES } from './materials'
 import { playNote } from './audio'
 import {
@@ -69,7 +70,7 @@ export function ScalesTool() {
   return (
     <div className="sc-page">
       {/* Header */}
-      <ToolHeader wordmark="Geetar Tool" />
+      <ToolHeader name="Scales" icon={<ScalesIcon />} />
 
       {/* Controls panel */}
       <div className="sc-controls">

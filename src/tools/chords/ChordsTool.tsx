@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
+import { ChordsIcon } from '../../shared/icons'
 import { ChordDiagram } from './ChordDiagram'
 import { strum } from './audio'
 import {
@@ -34,7 +35,7 @@ export function ChordsTool() {
 
   return (
     <div className="ch-page">
-      <ToolHeader wordmark="Geetar Tool" />
+      <ToolHeader name="Chords" icon={<ChordsIcon />} />
 
       {/* Picker — collapsible; root dropdown + 3 rows of compact chord chips */}
       <div className="ch-controls">
