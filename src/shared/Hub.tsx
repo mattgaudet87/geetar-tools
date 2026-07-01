@@ -16,20 +16,9 @@ export function Hub() {
         padding: '40px 28px 64px',
       }}
     >
-      <div style={{ marginBottom: 10 }}>
+      <div style={{ marginBottom: 34 }}>
         <Brand />
       </div>
-      <p
-        style={{
-          margin: '0 0 34px',
-          maxWidth: 620,
-          color: 'var(--text-muted-2)',
-          fontSize: 13.5,
-          lineHeight: 1.6,
-        }}
-      >
-        A growing set of tools for guitarists. Pick one to get started.
-      </p>
 
       <div
         style={{
@@ -52,7 +41,6 @@ export function Hub() {
                 <span
                   aria-hidden
                   style={{
-                    fontSize: 22,
                     width: 42,
                     height: 42,
                     display: 'grid',
@@ -60,6 +48,7 @@ export function Hub() {
                     borderRadius: 11,
                     background: 'var(--control-bg-2)',
                     border: '1px solid var(--control-border-2)',
+                    color: 'var(--accent-bright)',
                   }}
                 >
                   {tool.mark}

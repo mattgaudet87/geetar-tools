@@ -1,7 +1,8 @@
-import type { ComponentType } from 'react'
+import type { ComponentType, ReactNode } from 'react'
 import { ScalesTool } from './scales/ScalesTool'
 import { TunerTool } from './tuner/TunerTool'
 import { MetronomeTool } from './metronome/MetronomeTool'
+import { ScalesIcon, TunerIcon, MetronomeIcon } from '../shared/icons'
 
 /*
  * The tool registry.
@@ -24,8 +25,8 @@ export interface ToolDef {
   path: string
   /** One-line description for the hub card. */
   blurb: string
-  /** Short emoji/text mark for the hub card. */
-  mark: string
+  /** Icon shown on the hub card. */
+  mark: ReactNode
   /** Whether the tool is finished enough to open. */
   ready: boolean
   /** The React component rendered at the tool's route. */
@@ -35,10 +36,10 @@ export interface ToolDef {
 export const TOOLS: ToolDef[] = [
   {
     id: 'scales',
-    name: 'Scale Visualizer',
+    name: 'Scales',
     path: 'scales',
-    blurb: 'Pick a root, scale, and tuning — see every note on the fretboard and hear it.',
-    mark: '🎸',
+    blurb: 'Visualize & learn scales. See all notes you can play in all scales (with audio).',
+    mark: <ScalesIcon />,
     ready: true,
     component: ScalesTool,
   },
@@ -47,7 +48,7 @@ export const TOOLS: ToolDef[] = [
     name: 'Tuner',
     path: 'tuner',
     blurb: 'Tune by ear with reference tones, or use your mic to see how sharp or flat you are.',
-    mark: '🎯',
+    mark: <TunerIcon />,
     ready: true,
     component: TunerTool,
   },
@@ -55,11 +56,11 @@ export const TOOLS: ToolDef[] = [
     id: 'metronome',
     name: 'Metronome',
     path: 'metronome',
-    blurb: 'Keep time with an accurate click — adjustable tempo, tap tempo, beats, and accents.',
-    mark: '🥁',
+    blurb: 'Keep time with the adjustable tempo metronome.',
+    mark: <MetronomeIcon />,
     ready: true,
     component: MetronomeTool,
   },
   // Future tools go here, e.g.:
-  // { id: 'chords', name: 'Chord Finder', path: 'chords', blurb: '…', mark: '🎵', ready: false, component: ChordsTool },
+  // { id: 'chords', name: 'Chord Finder', path: 'chords', blurb: '…', mark: <ChordsIcon />, ready: false, component: ChordsTool },
 ]
