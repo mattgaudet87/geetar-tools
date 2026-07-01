@@ -1,0 +1,252 @@
+/* Tuner — tool-specific styles. Theme tokens come from theme.css. */
+
+.tn-page {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 28px 64px;
+}
+
+.tn-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+.tn-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-panel);
+  border-radius: 18px;
+  padding: 26px 28px 30px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 18px 50px rgba(0, 0, 0, 0.4);
+}
+
+/* Mode segmented toggle */
+.tn-modes {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+.tn-seg {
+  display: flex;
+  background: var(--control-bg-2);
+  border: 1px solid var(--border-panel);
+  border-radius: 10px;
+  padding: 3px;
+}
+.tn-seg button {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #7b8492;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.tn-seg button.is-active {
+  background: rgba(52, 211, 153, 0.16);
+  color: var(--accent-bright);
+}
+
+.tn-hint {
+  text-align: center;
+  color: var(--text-muted-2);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.tn-tuning-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-bottom: 22px;
+}
+
+/* Reference-tone string buttons */
+.tn-strings {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.tn-string {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 64px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  transition: transform 0.1s ease, border-color 0.1s ease, background 0.1s ease;
+}
+.tn-string:hover {
+  transform: translateY(-2px);
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.tn-string.is-active {
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.55);
+}
+.tn-string .name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text-primary);
+}
+.tn-string.is-active .name {
+  color: var(--accent-bright);
+}
+.tn-string .freq {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted-3);
+}
+
+/* ---- Listen mode ---- */
+.tn-listen {
+  text-align: center;
+}
+.tn-readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+.tn-note {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 84px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.tn-note.is-flat {
+  color: #e0b043;
+}
+.tn-note.is-sharp {
+  color: #e0b043;
+}
+.tn-note.is-intune {
+  color: #7df0c0;
+}
+.tn-note.is-empty {
+  color: var(--text-faint);
+  opacity: 0.5;
+}
+.tn-octave {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text-muted-2);
+}
+.tn-cents-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+  min-height: 15px;
+  margin-bottom: 18px;
+}
+.tn-cents-label.is-intune {
+  color: var(--accent-bright);
+}
+
+/* Cents meter */
+.tn-meter {
+  position: relative;
+  height: 54px;
+  margin: 0 auto 22px;
+  max-width: 460px;
+  background: var(--control-bg-2);
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.tn-meter-center {
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: rgba(52, 211, 153, 0.55);
+}
+.tn-meter-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+  align-items: center;
+}
+.tn-meter-tick {
+  width: 1px;
+  height: 10px;
+  background: var(--control-border);
+}
+.tn-needle {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 3px;
+  background: #e0b043;
+  box-shadow: 0 0 10px rgba(224, 176, 67, 0.6);
+  transition: left 0.08s linear, background 0.1s ease, box-shadow 0.1s ease;
+}
+.tn-needle.is-intune {
+  background: #34d399;
+  box-shadow: 0 0 14px rgba(52, 211, 153, 0.8);
+}
+.tn-scale-labels {
+  display: flex;
+  justify-content: space-between;
+  max-width: 460px;
+  margin: -14px auto 20px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+}
+
+.tn-freq {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--text-muted-3);
+  min-height: 15px;
+  margin-bottom: 20px;
+}
+
+.tn-mic {
+  padding: 13px 26px;
+  border-radius: 12px;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: #04150d;
+  background: radial-gradient(circle at 50% 0%, #7df0c0, #11b07f);
+  box-shadow: 0 8px 22px rgba(17, 176, 127, 0.35);
+}
+.tn-mic.is-listening {
+  color: var(--accent-bright);
+  background: rgba(52, 211, 153, 0.12);
+  box-shadow: none;
+}
+.tn-error {
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: #e07a7a;
+}

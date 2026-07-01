@@ -1,5 +1,7 @@
 import type { ComponentType } from 'react'
 import { ScalesTool } from './scales/ScalesTool'
+import { TunerTool } from './tuner/TunerTool'
+import { MetronomeTool } from './metronome/MetronomeTool'
 
 /*
  * The tool registry.
@@ -39,6 +41,24 @@ export const TOOLS: ToolDef[] = [
     mark: '🎸',
     ready: true,
     component: ScalesTool,
+  },
+  {
+    id: 'tuner',
+    name: 'Tuner',
+    path: 'tuner',
+    blurb: 'Tune by ear with reference tones, or use your mic to see how sharp or flat you are.',
+    mark: '🎯',
+    ready: true,
+    component: TunerTool,
+  },
+  {
+    id: 'metronome',
+    name: 'Metronome',
+    path: 'metronome',
+    blurb: 'Keep time with an accurate click — adjustable tempo, tap tempo, beats, and accents.',
+    mark: '🥁',
+    ready: true,
+    component: MetronomeTool,
   },
   // Future tools go here, e.g.:
   // { id: 'chords', name: 'Chord Finder', path: 'chords', blurb: '…', mark: '🎵', ready: false, component: ChordsTool },
