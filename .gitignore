@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# TypeScript build output / incremental info (tsc -b emits these)
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+
+# Logs
+logs
+*.log
+npm-debug.log*

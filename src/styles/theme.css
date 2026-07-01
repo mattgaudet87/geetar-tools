@@ -1,0 +1,108 @@
+/*
+ * Geetar Tools — shared design tokens & global styles.
+ * These variables are the single source of truth for the look of every tool.
+ * Values come straight from the README "Design Tokens" section.
+ */
+
+:root {
+  /* Fonts */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Surfaces */
+  --bg-app: radial-gradient(120% 90% at 50% -10%, #161d27 0%, #0d1117 55%, #0a0d12 100%);
+  --bg-panel: linear-gradient(180deg, #161d28, #131923);
+  --bg-board: linear-gradient(180deg, #10151e, #0c1118);
+
+  /* Borders / dividers */
+  --border-panel: #242d3b;
+  --border-board: #222a37;
+  --divider: #1d2531;
+  --divider-legend: #1a212c;
+
+  /* Accent (emerald) */
+  --accent: #34d399;
+  --accent-bright: #7ff0c4;
+  --accent-bright-2: #7df0c0;
+  --accent-deep: #2fd396;
+  --accent-deep-2: #11b07f;
+  --accent-deep-3: #10b07f;
+
+  /* Text */
+  --text-primary: #f3f6fa;
+  --text-primary-2: #e6e9ef;
+  --text-secondary: #dfe4ec;
+  --text-secondary-2: #cfd6e2;
+  --text-muted: #8b93a3;
+  --text-muted-2: #7b8492;
+  --text-muted-3: #6b7485;
+  --text-faint: #5a6273;
+  --text-faint-2: #566072;
+  --text-faint-3: #4e5768;
+  --text-faint-4: #465062;
+
+  /* Controls */
+  --control-bg: #141a24;
+  --control-bg-2: #0f141d;
+  --control-border: #28313f;
+  --control-border-2: #242d3b;
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-app);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Shared native <select> styling (used by multiple tools). */
+.gt-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 30px 8px 12px;
+  border-radius: 9px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-secondary-2);
+  background-color: var(--control-bg);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237b8492' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 11px center;
+  border: 1px solid var(--control-border);
+  cursor: pointer;
+}
+
+/* Small uppercase technical labels. */
+.gt-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted-3);
+}
