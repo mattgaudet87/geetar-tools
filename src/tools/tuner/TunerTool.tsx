@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Brand } from '../../shared/Brand'
+import { ToolHeader } from '../../shared/ToolHeader'
 import { autoCorrelate } from './pitch'
 import {
   TUNING_NAMES,
@@ -18,9 +18,7 @@ export function TunerTool() {
 
   return (
     <div className="tn-page">
-      <div className="tn-header">
-        <Brand wordmark="Geetar Tool" />
-      </div>
+      <ToolHeader wordmark="Geetar Tool" />
 
       <div className="tn-card">
         <div className="tn-modes">

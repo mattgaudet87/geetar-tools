@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Brand } from '../../shared/Brand'
+import { ToolHeader } from '../../shared/ToolHeader'
 import { MATERIALS, MATERIAL_NAMES } from './materials'
 import { playNote } from './audio'
 import {
@@ -69,9 +69,7 @@ export function ScalesTool() {
   return (
     <div className="sc-page">
       {/* Header */}
-      <div className="sc-header">
-        <Brand wordmark="Geetar Tool" />
-      </div>
+      <ToolHeader wordmark="Geetar Tool" />
 
       {/* Controls panel */}
       <div className="sc-controls">
