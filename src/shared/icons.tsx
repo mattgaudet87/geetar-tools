@@ -39,6 +39,21 @@ export function TunerIcon() {
   )
 }
 
+/** Chord chart with dots — for the Chords tool. */
+export function ChordsIcon() {
+  return (
+    <svg {...base} aria-hidden>
+      <line x1="7" y1="4" x2="7" y2="20" />
+      <line x1="12" y1="4" x2="12" y2="20" />
+      <line x1="17" y1="4" x2="17" y2="20" />
+      <line x1="4" y1="8" x2="20" y2="8" />
+      <line x1="4" y1="14" x2="20" y2="14" />
+      <circle cx="7" cy="11" r="1.6" fill="currentColor" stroke="none" />
+      <circle cx="17" cy="17" r="1.6" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
 /** Classic metronome with pendulum — for the Metronome tool. */
 export function MetronomeIcon() {
   return (

@@ -1,8 +1,9 @@
 import type { ComponentType, ReactNode } from 'react'
 import { ScalesTool } from './scales/ScalesTool'
+import { ChordsTool } from './chords/ChordsTool'
 import { TunerTool } from './tuner/TunerTool'
 import { MetronomeTool } from './metronome/MetronomeTool'
-import { ScalesIcon, TunerIcon, MetronomeIcon } from '../shared/icons'
+import { ScalesIcon, ChordsIcon, TunerIcon, MetronomeIcon } from '../shared/icons'
 
 /*
  * The tool registry.
@@ -42,6 +43,15 @@ export const TOOLS: ToolDef[] = [
     mark: <ScalesIcon />,
     ready: true,
     component: ScalesTool,
+  },
+  {
+    id: 'chords',
+    name: 'Chords',
+    path: 'chords',
+    blurb: 'Every chord and quality, with all the different ways to play each one on the neck.',
+    mark: <ChordsIcon />,
+    ready: true,
+    component: ChordsTool,
   },
   {
     id: 'tuner',
