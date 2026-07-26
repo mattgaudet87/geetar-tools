@@ -1,0 +1,313 @@
+/* Transpose — tool-specific styles. Theme tokens come from theme.css. */
+
+.tp-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 28px 64px;
+
+  /* chord-diagram palette (shared with the Chords tool diagrams) */
+  --ch-line: #3a4557;
+  --ch-dot: #e2e7f0;
+  --ch-mark: #7b8492;
+}
+
+/* ---- Panels ---- */
+.tp-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-panel);
+  border-radius: 16px;
+  padding: 18px 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
+    0 14px 40px rgba(0, 0, 0, 0.35);
+}
+.tp-panel-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 14px;
+}
+
+.tp-build-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 24px;
+}
+.tp-unit {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.tp-unit-right {
+  margin-left: auto;
+}
+
+.tp-add {
+  padding: 8px 14px;
+  border-radius: 9px;
+  background: rgba(52, 211, 153, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.5);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.tp-sound {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: 9px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.tp-sound .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.tp-sound.is-on {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: var(--accent-bright);
+}
+.tp-sound.is-on .dot {
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+}
+.tp-sound.is-off {
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-muted);
+}
+.tp-sound.is-off .dot {
+  background: #4a5161;
+}
+
+.tp-hint {
+  margin: 14px 0 2px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+}
+
+/* Progression chips */
+.tp-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.tp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 6px 8px 13px;
+  border-radius: 9px;
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 14px;
+}
+.tp-chip-x {
+  background: transparent;
+  border: none;
+  color: var(--text-muted-2);
+  font-size: 14px;
+  padding: 0 6px;
+  line-height: 1;
+}
+.tp-chip-x:hover {
+  color: var(--text-secondary);
+}
+.tp-clear {
+  margin-left: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.tp-sounds-like {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid var(--divider);
+}
+
+.tp-mini {
+  min-width: 38px;
+  text-align: center;
+  padding: 7px 9px;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 13px;
+  background: #161d28;
+  border: 1px solid #2a3342;
+  color: var(--text-secondary);
+}
+.tp-mini.is-sound {
+  background: rgba(52, 211, 153, 0.12);
+  border-color: rgba(52, 211, 153, 0.5);
+  color: var(--accent-bright);
+}
+.tp-mini.is-shape {
+  color: var(--text-primary);
+}
+
+/* ---- Transpose board ---- */
+.tp-board {
+  background: var(--bg-board);
+  border: 1px solid var(--border-board);
+  border-radius: 18px;
+  padding: 22px 22px 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+.tp-board-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.tp-board-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--text-primary);
+}
+.tp-board-title .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #34d399;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.7);
+}
+.tp-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-bright);
+}
+
+.tp-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--divider-legend);
+  margin-bottom: 16px;
+}
+
+.tp-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tp-stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.tp-stepper button:hover {
+  border-color: rgba(52, 211, 153, 0.45);
+  color: var(--accent-bright);
+}
+.tp-step-val {
+  min-width: 120px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--accent-bright);
+}
+
+.tp-empty {
+  text-align: center;
+  color: var(--text-muted-2);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  padding: 26px 0;
+}
+
+.tp-result-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tp-result-row .gt-label {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.tp-diagrams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 20px 14px;
+  margin-top: 20px;
+}
+.tp-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.tp-cell-label {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.tp-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--divider-legend);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint-2);
+}
+
+@media (max-width: 560px) {
+  .tp-result-row .gt-label {
+    width: 100%;
+  }
+}
