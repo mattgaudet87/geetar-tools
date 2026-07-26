@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { ChordsIcon } from '../../shared/icons'
 import { ChordDiagram } from './ChordDiagram'
+import { ChordFinder } from './ChordFinder'
 import { strum } from './audio'
 import {
   NOTES,
@@ -15,6 +16,7 @@ import {
 import './chords.css'
 
 export function ChordsTool() {
+  const [view, setView] = useState<'lookup' | 'finder'>('lookup')
   const [root, setRoot] = useState(0) // C
   const [quality, setQuality] = useState('Major')
   const [sound, setSound] = useState(true)
@@ -37,6 +39,28 @@ export function ChordsTool() {
     <div className="ch-page">
       <ToolHeader name="Chords" icon={<ChordsIcon />} />
 
+      {/* Mode: look up a chord you know, or find one from notes you play */}
+      <div className="ch-mode-row">
+        <div className="ch-modeseg">
+          <button
+            className={view === 'lookup' ? 'is-active' : ''}
+            onClick={() => setView('lookup')}
+          >
+            Chord library
+          </button>
+          <button
+            className={view === 'finder' ? 'is-active' : ''}
+            onClick={() => setView('finder')}
+          >
+            Find by notes
+          </button>
+        </div>
+      </div>
+
+      {view === 'finder' ? (
+        <ChordFinder sound={sound} onToggleSound={() => setSound((s) => !s)} />
+      ) : (
+        <>
       {/* Picker — collapsible; root dropdown + 3 rows of compact chord chips */}
       <div className="ch-controls">
         <div className="ch-panel-head">
@@ -167,6 +191,8 @@ export function ChordsTool() {
           <span className="ch-legend-hint">Click a shape to hear it</span>
         </div>
       </div>
+        </>
+      )}
     </div>
   )
 }

@@ -11,6 +11,34 @@
   --ch-mark: #7b8492;
 }
 
+/* ---- Mode toggle (library / find by notes) ---- */
+.ch-mode-row {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+.ch-modeseg {
+  display: flex;
+  background: var(--control-bg-2);
+  border: 1px solid var(--border-panel);
+  border-radius: 11px;
+  padding: 3px;
+}
+.ch-modeseg button {
+  padding: 9px 18px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: #7b8492;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.ch-modeseg button.is-active {
+  background: rgba(52, 211, 153, 0.16);
+  color: var(--accent-bright);
+}
+
 /* ---- Options panel (collapsible) ---- */
 .ch-controls {
   background: var(--bg-panel);
@@ -354,5 +382,246 @@
   margin-left: auto;
   font-family: var(--font-mono);
   font-size: 11px;
+  color: var(--text-faint-2);
+}
+
+/* ---- Reverse chord finder ---- */
+.chf-controls {
+  margin-bottom: 22px;
+}
+.chf-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+}
+.chf-bar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chf-ghost {
+  padding: 8px 14px;
+  border-radius: 9px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.chf-ghost:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.chf-strum {
+  padding: 8px 16px;
+  border-radius: 9px;
+  background: rgba(52, 211, 153, 0.14);
+  border: 1px solid rgba(52, 211, 153, 0.5);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12px;
+}
+.chf-strum:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.chf-hint {
+  margin: 12px 0 2px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-muted-2);
+}
+
+.chf-boardwrap {
+  margin-bottom: 22px;
+}
+.chf-scroll {
+  overflow-x: auto;
+}
+.chf-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px repeat(13, minmax(44px, 1fr));
+  min-width: 640px;
+}
+.chf-fnum {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  color: #566178;
+  padding-bottom: 7px;
+}
+.chf-fnum.is-marker {
+  color: #6e7c93;
+}
+.chf-fnum.is-capo {
+  color: var(--accent-bright);
+}
+.chf-fnum.is-behind {
+  color: #39424f;
+}
+.chf-slabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-muted-2);
+}
+.chf-cell {
+  position: relative;
+  height: 46px;
+  background: transparent;
+  border: none;
+  border-right: 1px solid #2a3342;
+  padding: 0;
+}
+.chf-cell.is-nut {
+  border-right: 3px solid #8b93a3;
+}
+.chf-cell.is-last {
+  border-right: none;
+}
+.chf-cell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: #3a4557;
+}
+.chf-cell::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(52, 211, 153, 0);
+  transition: background 0.1s ease;
+}
+.chf-cell:hover:not(:disabled)::after {
+  background: rgba(52, 211, 153, 0.16);
+}
+.chf-cell.is-behind {
+  cursor: default;
+  background: rgba(6, 9, 14, 0.55);
+}
+.chf-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 12.5px;
+  background: radial-gradient(circle at 36% 30%, #7df0c0 0%, #2fd396 46%, #11b07f 100%);
+  color: #04150d;
+  border: 1px solid rgba(140, 255, 210, 0.6);
+  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15), 0 5px 12px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+.chf-capo-bar {
+  /* Absolutely positioned inside its grid area so it doesn't occupy a cell
+     (a placed grid item would push the auto-flowing cells out of line). */
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  right: 2px;
+  width: 11px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #4a5568 0%, #2b3444 45%, #1c2330 100%);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 4px 12px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.chf-selrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.chf-selnote {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint-2);
+  margin-left: 4px;
+}
+.chf-matchgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 12px;
+}
+.chf-match {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 13px 15px;
+  border-radius: 12px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  text-align: left;
+  transition: border-color 0.1s ease, transform 0.1s ease;
+}
+.chf-match:hover {
+  border-color: rgba(52, 211, 153, 0.4);
+  transform: translateY(-1px);
+}
+.chf-match.is-exact {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.45);
+}
+.chf-match-symbol {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+.chf-match.is-exact .chf-match-symbol {
+  color: var(--accent-bright);
+}
+.chf-match-name {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted-2);
+}
+.chf-badge {
+  margin-top: 3px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(52, 211, 153, 0.16);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.chf-missing {
+  margin-top: 3px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
   color: var(--text-faint-2);
 }

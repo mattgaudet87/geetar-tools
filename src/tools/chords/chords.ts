@@ -84,6 +84,61 @@ export const CHORD_CATEGORIES: { name: string; items: string[] }[] = [
   },
 ]
 
+/** A chord-name match returned by the reverse finder. */
+export interface ChordMatch {
+  root: number
+  quality: string
+  /** True when the selected notes are exactly the chord's tones. */
+  exact: boolean
+  /** Chord tones not selected yet — what you'd add to complete it. */
+  missing: string[]
+}
+
+const QUALITIES = Object.keys(CHORDS)
+const MATCH_LIMIT = 18
+
+/**
+ * Reverse lookup: which chords contain all of the given pitch classes?
+ * Exact matches (same note set) rank first, then the nearest supersets, with
+ * chords rooted on the bass note and simpler qualities preferred.
+ */
+export function findChords(pcs: number[], bassPc: number | null): ChordMatch[] {
+  const sel = new Set(pcs)
+  if (sel.size < 2) return []
+
+  const out: ChordMatch[] = []
+  for (let root = 0; root < 12; root++) {
+    for (const quality of QUALITIES) {
+      const tones = new Set(
+        CHORDS[quality].intervals.map((iv) => (root + iv) % 12),
+      )
+      if (tones.size < sel.size) continue
+      let contains = true
+      for (const pc of sel) {
+        if (!tones.has(pc)) {
+          contains = false
+          break
+        }
+      }
+      if (!contains) continue
+      out.push({
+        root,
+        quality,
+        exact: tones.size === sel.size,
+        missing: [...tones].filter((pc) => !sel.has(pc)).map((pc) => NOTES[pc]),
+      })
+    }
+  }
+
+  const rank = (m: ChordMatch) =>
+    (m.exact ? 0 : 1000) +
+    m.missing.length * 100 +
+    (bassPc != null && m.root === bassPc ? 0 : 30) +
+    QUALITIES.indexOf(m.quality)
+  out.sort((a, b) => rank(a) - rank(b))
+  return out.slice(0, MATCH_LIMIT)
+}
+
 /** A voicing: fret per string low->high; null = muted, 0 = open. */
 export interface Voicing {
   frets: (number | null)[]
