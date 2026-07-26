@@ -3,7 +3,16 @@ import { ScalesTool } from './scales/ScalesTool'
 import { ChordsTool } from './chords/ChordsTool'
 import { TunerTool } from './tuner/TunerTool'
 import { MetronomeTool } from './metronome/MetronomeTool'
-import { ScalesIcon, ChordsIcon, TunerIcon, MetronomeIcon } from '../shared/icons'
+import { TransposeTool } from './transpose/TransposeTool'
+import { TheoryTool } from './theory/TheoryTool'
+import {
+  ScalesIcon,
+  ChordsIcon,
+  TunerIcon,
+  MetronomeIcon,
+  TransposeIcon,
+  TheoryIcon,
+} from '../shared/icons'
 
 /*
  * The tool registry.
@@ -52,6 +61,24 @@ export const TOOLS: ToolDef[] = [
     mark: <ChordsIcon />,
     ready: true,
     component: ChordsTool,
+  },
+  {
+    id: 'transpose',
+    name: 'Transpose',
+    path: 'transpose',
+    blurb: 'Move any chord or progression up, down, or to a new capo — and see the shapes to play.',
+    mark: <TransposeIcon />,
+    ready: true,
+    component: TransposeTool,
+  },
+  {
+    id: 'theory',
+    name: 'Music Theory',
+    path: 'theory',
+    blurb: 'Keys, progressions, the circle of fifths, intervals, and a plain-English glossary.',
+    mark: <TheoryIcon />,
+    ready: true,
+    component: TheoryTool,
   },
   {
     id: 'tuner',

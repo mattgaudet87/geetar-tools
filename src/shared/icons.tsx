@@ -54,6 +54,28 @@ export function ChordsIcon() {
   )
 }
 
+/** Up/down arrows — for the Transpose tool. */
+export function TransposeIcon() {
+  return (
+    <svg {...base} aria-hidden>
+      <line x1="8" y1="19" x2="8" y2="6" />
+      <polyline points="4.5 9.5 8 6 11.5 9.5" />
+      <line x1="16" y1="5" x2="16" y2="18" />
+      <polyline points="12.5 14.5 16 18 19.5 14.5" />
+    </svg>
+  )
+}
+
+/** Open book — for the Music Theory tool. */
+export function TheoryIcon() {
+  return (
+    <svg {...base} aria-hidden>
+      <path d="M12 6.5 C10 4.8 7 4.5 4 5.2 V18.2 C7 17.5 10 17.8 12 19.2 C14 17.8 17 17.5 20 18.2 V5.2 C17 4.5 14 4.8 12 6.5 Z" />
+      <line x1="12" y1="6.5" x2="12" y2="19.2" />
+    </svg>
+  )
+}
+
 /** Classic metronome with pendulum — for the Metronome tool. */
 export function MetronomeIcon() {
   return (
