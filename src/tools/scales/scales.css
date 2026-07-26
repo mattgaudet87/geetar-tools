@@ -277,13 +277,19 @@
   flex: 1;
   text-align: center;
   font-family: var(--font-mono);
-  font-weight: 500;
+  font-weight: 700;
   font-size: 11px;
-  color: #465062;
+  color: #566178;
   padding-bottom: 6px;
 }
 .sc-fret-num.is-marker {
-  color: #5d6a7d;
+  color: #6e7c93;
+}
+.sc-fret-num.is-capo {
+  color: var(--accent-bright);
+}
+.sc-fret-num.is-behind-capo {
+  color: #39424f;
 }
 
 .sc-board-body {
@@ -342,6 +348,34 @@
   width: 11px;
   height: 11px;
   border-radius: 50%;
+}
+
+/* ---- Capo overlay ---- */
+.sc-capo-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  pointer-events: none;
+}
+.sc-capo-cell {
+  flex: 1;
+  position: relative;
+}
+.sc-capo-cell.is-shaded {
+  background: rgba(6, 9, 14, 0.62);
+}
+.sc-capo-bar {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  right: 5px;
+  width: 12px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #4a5568 0%, #2b3444 45%, #1c2330 100%);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset,
+    0 4px 12px rgba(0, 0, 0, 0.55);
 }
 
 .sc-strings {

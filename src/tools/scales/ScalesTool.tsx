@@ -25,6 +25,7 @@ export function ScalesTool() {
   const [scale, setScale] = useState('Major')
   const [mode, setMode] = useState<'deg' | 'note'>('deg')
   const [sound, setSound] = useState(true)
+  const [capo, setCapo] = useState(0)
   const [material, setMaterial] = useState('Walnut')
   const [tuning, setTuning] = useState<number[]>([64, 59, 55, 50, 45, 40])
 
@@ -103,6 +104,22 @@ export function ScalesTool() {
               <span className="dot" />
               {sound ? 'On' : 'Off'}
             </button>
+          </div>
+
+          <div className="sc-unit">
+            <span className="gt-label">Capo</span>
+            <select
+              className="gt-select"
+              value={capo}
+              onChange={(e) => setCapo(Number(e.target.value))}
+            >
+              <option value={0}>None</option>
+              {Array.from({ length: 9 }, (_, i) => i + 1).map((f) => (
+                <option key={f} value={f}>
+                  Fret {f}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="sc-unit">
@@ -216,7 +233,9 @@ export function ScalesTool() {
             <span className="dot" />
             {NOTES[root]} {scale}
           </div>
-          <div className="sc-fret-range">0–{fretCount} FRETS</div>
+          <div className="sc-fret-range">
+            {capo > 0 ? `CAPO ${capo} · ` : ''}0–{fretCount} FRETS
+          </div>
         </div>
 
         <div className="sc-surface-scroll">
@@ -227,7 +246,9 @@ export function ScalesTool() {
               {frets.map((f) => (
                 <div
                   key={f}
-                  className={`sc-fret-num ${markerFrets.has(f) ? 'is-marker' : ''}`}
+                  className={`sc-fret-num ${markerFrets.has(f) ? 'is-marker' : ''} ${
+                    capo > 0 && f === capo ? 'is-capo' : ''
+                  } ${capo > 0 && f < capo ? 'is-behind-capo' : ''}`}
                 >
                   {f}
                 </div>
@@ -238,9 +259,9 @@ export function ScalesTool() {
           {/* Board body */}
           <div className="sc-board-body">
             <div className="sc-string-labels">
-              {board.map((s, i) => (
+              {board.map((_, i) => (
                 <div className="sc-string-label" key={i}>
-                  {s.stringLabel}
+                  {NOTES[pitchClass(tuning[i] + capo)]}
                 </div>
               ))}
             </div>
@@ -280,6 +301,20 @@ export function ScalesTool() {
                 ))}
               </div>
 
+              {/* 3.5 capo overlay — shades unplayable frets, draws the capo bar */}
+              {capo > 0 && (
+                <div className="sc-capo-layer" style={rowDir}>
+                  {frets.map((f) => (
+                    <div
+                      className={`sc-capo-cell ${f < capo ? 'is-shaded' : ''}`}
+                      key={f}
+                    >
+                      {f === capo && <span className="sc-capo-bar" />}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* 4. strings + dots */}
               <div className="sc-strings">
                 {board.map((s, i) => (
@@ -301,7 +336,7 @@ export function ScalesTool() {
                                 : `1px solid ${mat.fret}`,
                         }}
                       >
-                        {dot && (
+                        {dot && f >= capo && (
                           <button
                             className={`sc-dot ${dot.isRoot ? 'is-root' : 'is-scale'}`}
                             onClick={() => onDot(dot.midi)}
