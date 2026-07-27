@@ -30,6 +30,7 @@ export function ScalesTool() {
   const [capoView, setCapoView] = useState(false)
   const [material, setMaterial] = useState('Walnut')
   const [tuning, setTuning] = useState<number[]>([64, 59, 55, 50, 45, 40])
+  const [customOpen, setCustomOpen] = useState(false)
 
   // Config points — fixed for now, easy to wire to controls later (see README).
   const lefty = false
@@ -63,8 +64,14 @@ export function ScalesTool() {
   }
 
   function onPreset(name: string) {
-    if (name === 'Custom') return // display-only, no-op
-    if (PRESETS[name]) setTuning([...PRESETS[name]])
+    if (name === 'Custom') {
+      setCustomOpen(true)
+      return
+    }
+    if (PRESETS[name]) {
+      setTuning([...PRESETS[name]])
+      setCustomOpen(false)
+    }
   }
 
   function onDot(midi: number) {
@@ -78,91 +85,6 @@ export function ScalesTool() {
 
       {/* Controls panel */}
       <div className="sc-controls">
-        {/* Row A — toolbar */}
-        <div className="sc-row sc-row-toolbar">
-          <div className="sc-unit">
-            <span className="gt-label">Dots</span>
-            <div className="sc-seg">
-              <button
-                className={mode === 'deg' ? 'is-active' : ''}
-                onClick={() => setMode('deg')}
-              >
-                Degrees
-              </button>
-              <button
-                className={mode === 'note' ? 'is-active' : ''}
-                onClick={() => setMode('note')}
-              >
-                Note names
-              </button>
-            </div>
-          </div>
-
-          <div className="sc-unit">
-            <span className="gt-label">Sound</span>
-            <button
-              className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
-              onClick={() => setSound((s) => !s)}
-            >
-              <span className="dot" />
-              {sound ? 'On' : 'Off'}
-            </button>
-          </div>
-
-          <div className="sc-unit">
-            <span className="gt-label">Capo</span>
-            <select
-              className="gt-select"
-              value={capo}
-              onChange={(e) => setCapo(Number(e.target.value))}
-            >
-              <option value={0}>None</option>
-              {Array.from({ length: 9 }, (_, i) => i + 1).map((f) => (
-                <option key={f} value={f}>
-                  Fret {f}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {capo > 0 && (
-            <div className="sc-unit">
-              <span className="gt-label">Note names</span>
-              <div className="sc-seg">
-                <button
-                  className={!capoView ? 'is-active' : ''}
-                  onClick={() => setCapoView(false)}
-                  title="Show the actual sounding pitch at each fret"
-                >
-                  True notes
-                </button>
-                <button
-                  className={capoView ? 'is-active' : ''}
-                  onClick={() => setCapoView(true)}
-                  title="Name notes as if the capo were the nut (shape thinking)"
-                >
-                  Capo as nut
-                </button>
-              </div>
-            </div>
-          )}
-
-          <div className="sc-unit">
-            <span className="gt-label">Neck</span>
-            <select
-              className="gt-select"
-              value={material}
-              onChange={(e) => setMaterial(e.target.value)}
-            >
-              {MATERIAL_NAMES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         {/* Row B — root */}
         <div className="sc-row sc-row-pills">
           <span className="gt-label sc-fixed-label">Root</span>
@@ -195,52 +117,6 @@ export function ScalesTool() {
           </div>
         </div>
 
-        {/* Row D — tuning */}
-        <div className="sc-row sc-row-pills" style={{ borderBottom: 'none' }}>
-          <span className="gt-label sc-fixed-label">Tuning</span>
-          <div className="sc-tuning-group">
-            <select
-              className="gt-select"
-              value={presetName}
-              onChange={(e) => onPreset(e.target.value)}
-            >
-              {PRESET_NAMES.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-              <option value="Custom">Custom</option>
-            </select>
-
-            <span className="gt-label">High</span>
-            <div className="sc-steppers">
-              {tuning.map((midi, i) => {
-                const pc = pitchClass(midi)
-                const isRootString = pc === root
-                return (
-                  <div className="sc-stepper" key={i}>
-                    <button
-                      aria-label={`Raise string ${i + 1}`}
-                      onClick={() => stepString(i, 1)}
-                    >
-                      &#9650;
-                    </button>
-                    <div className={`sc-note-box ${isRootString ? 'is-root' : ''}`}>
-                      {NOTES[pc]}
-                    </div>
-                    <button
-                      aria-label={`Lower string ${i + 1}`}
-                      onClick={() => stepString(i, -1)}
-                    >
-                      &#9660;
-                    </button>
-                  </div>
-                )
-              })}
-            </div>
-            <span className="gt-label">Low</span>
-          </div>
-        </div>
       </div>
 
       {/* Scale strip */}
@@ -254,19 +130,57 @@ export function ScalesTool() {
       {/* Board panel */}
       <div className="sc-board">
         <div className="sc-board-header">
-          <div className="sc-board-title">
-            <span className="dot" />
-            {NOTES[root]} {scale}
+          <div className="sc-board-header-group">
+            <div className="sc-unit">
+              <span className="gt-label">Dots</span>
+              <div className="sc-seg">
+                <button
+                  className={mode === 'deg' ? 'is-active' : ''}
+                  onClick={() => setMode('deg')}
+                >
+                  Degrees
+                </button>
+                <button
+                  className={mode === 'note' ? 'is-active' : ''}
+                  onClick={() => setMode('note')}
+                >
+                  Note names
+                </button>
+              </div>
+            </div>
+
+            {capo > 0 && (
+              <div className="sc-unit">
+                <span className="gt-label">Note names</span>
+                <div className="sc-seg">
+                  <button
+                    className={!capoView ? 'is-active' : ''}
+                    onClick={() => setCapoView(false)}
+                    title="Show the actual sounding pitch at each fret"
+                  >
+                    True notes
+                  </button>
+                  <button
+                    className={capoView ? 'is-active' : ''}
+                    onClick={() => setCapoView(true)}
+                    title="Name notes as if the capo were the nut (shape thinking)"
+                  >
+                    Capo as nut
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="sc-fret-range">
-            {capo > 0
-              ? `CAPO ${capo}${
-                  capoView
-                    ? ` · ${NOTES[pitchClass(root - capo)]} SHAPES`
-                    : ''
-                } · `
-              : ''}
-            0–{fretCount} FRETS
+
+          <div className="sc-unit">
+            <span className="gt-label">Sound</span>
+            <button
+              className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
+              onClick={() => setSound((s) => !s)}
+            >
+              <span className="dot" />
+              {sound ? 'On' : 'Off'}
+            </button>
           </div>
         </div>
 
@@ -386,37 +300,116 @@ export function ScalesTool() {
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="sc-legend">
-          <div className="sc-legend-left">
-            <span className="sc-legend-item">
-              <span
-                className="sc-legend-swatch"
-                style={{
-                  background:
-                    'radial-gradient(circle at 36% 30%, #7df0c0 0%, #2fd396 46%, #11b07f 100%)',
-                }}
-              />
-              Root note
-            </span>
-            <span className="sc-legend-item">
-              <span
-                className="sc-legend-swatch"
-                style={{
-                  background:
-                    'radial-gradient(circle at 36% 30%, #2b3545 0%, #19212e 72%)',
-                }}
-              />
-              Scale note
-            </span>
-            <span className="sc-legend-item">Click a note to hear it</span>
+        {/* Footer — tuning / capo / neck */}
+        <div className="sc-board-footer">
+          <div className="sc-board-footer-group">
+            <div className="sc-unit sc-tuning-wrap">
+              <span className="gt-label">Tuning</span>
+              <select
+                className="gt-select"
+                value={customOpen ? 'Custom' : presetName}
+                onChange={(e) => onPreset(e.target.value)}
+              >
+                {PRESET_NAMES.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+                <option value="Custom">Custom</option>
+              </select>
+              {presetName === 'Custom' && !customOpen && (
+                <button
+                  className="sc-tuning-edit"
+                  onClick={() => setCustomOpen(true)}
+                >
+                  Edit
+                </button>
+              )}
+
+              {customOpen && (
+                <>
+                  <div
+                    className="sc-pop-backdrop"
+                    onClick={() => setCustomOpen(false)}
+                  />
+                  <div className="sc-tuning-pop">
+                    <div className="sc-tuning-pop-head">
+                      <span className="gt-label">Custom tuning</span>
+                      <button
+                        className="sc-tuning-done"
+                        onClick={() => setCustomOpen(false)}
+                      >
+                        Done
+                      </button>
+                    </div>
+                    <div className="sc-tuning-pop-row">
+                      <span className="gt-label">High</span>
+                      <div className="sc-steppers">
+                        {tuning.map((midi, i) => {
+                          const pc = pitchClass(midi)
+                          const isRootString = pc === root
+                          return (
+                            <div className="sc-stepper" key={i}>
+                              <button
+                                aria-label={`Raise string ${i + 1}`}
+                                onClick={() => stepString(i, 1)}
+                              >
+                                &#9650;
+                              </button>
+                              <div
+                                className={`sc-note-box ${
+                                  isRootString ? 'is-root' : ''
+                                }`}
+                              >
+                                {NOTES[pc]}
+                              </div>
+                              <button
+                                aria-label={`Lower string ${i + 1}`}
+                                onClick={() => stepString(i, -1)}
+                              >
+                                &#9660;
+                              </button>
+                            </div>
+                          )
+                        })}
+                      </div>
+                      <span className="gt-label">Low</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <div className="sc-unit">
+              <span className="gt-label">Capo</span>
+              <select
+                className="gt-select"
+                value={capo}
+                onChange={(e) => setCapo(Number(e.target.value))}
+              >
+                <option value={0}>None</option>
+                {Array.from({ length: 9 }, (_, i) => i + 1).map((f) => (
+                  <option key={f} value={f}>
+                    Fret {f}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="sc-legend-note">
-            {mode === 'deg'
-              ? 'Numbers = scale degree'
-              : capoView && capo > 0
-                ? 'Letters = note names with the capo as the nut'
-                : 'Letters = note name'}
+
+          <div className="sc-unit">
+            <span className="gt-label">Neck</span>
+            <select
+              className="gt-select"
+              value={material}
+              onChange={(e) => setMaterial(e.target.value)}
+            >
+              {MATERIAL_NAMES.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

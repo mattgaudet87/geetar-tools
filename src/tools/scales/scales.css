@@ -25,11 +25,6 @@
   border-top: 1px solid var(--divider);
 }
 
-.sc-row-toolbar {
-  padding: 14px 0;
-  justify-content: flex-end;
-  gap: 14px 22px;
-}
 .sc-row-pills {
   padding: 13px 0;
   gap: 16px;
@@ -130,12 +125,6 @@
 }
 
 /* ---- Tuning steppers ---- */
-.sc-tuning-group {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
 .sc-steppers {
   display: flex;
   align-items: center;
@@ -240,30 +229,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 22px;
   margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--divider-legend);
 }
-.sc-board-title {
+.sc-board-header-group {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 19px;
-  color: var(--text-primary);
-}
-.sc-board-title .dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.7);
-}
-.sc-fret-range {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #5a6273;
+  flex-wrap: wrap;
+  gap: 14px 22px;
 }
 
 .sc-fret-numbers {
@@ -442,8 +418,8 @@
   box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15), 0 5px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* ---- Legend ---- */
-.sc-legend {
+/* ---- Board footer (tuning / capo / neck) ---- */
+.sc-board-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -451,31 +427,72 @@
   padding-top: 16px;
   border-top: 1px solid var(--divider-legend);
   flex-wrap: wrap;
+  gap: 14px 22px;
+}
+.sc-board-footer-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+}
+
+/* ---- Custom tuning popup ---- */
+.sc-tuning-wrap {
+  position: relative;
+}
+.sc-tuning-edit {
+  padding: 8px 13px;
+  border-radius: 9px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.sc-tuning-edit:hover {
+  color: var(--text-secondary);
+}
+.sc-pop-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.sc-tuning-pop {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 18px 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-panel);
+  border-radius: 14px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 22px 55px rgba(0, 0, 0, 0.6);
+}
+.sc-tuning-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+.sc-tuning-pop-row {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
-.sc-legend-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-.sc-legend-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.sc-tuning-done {
+  padding: 6px 13px;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: var(--accent-bright);
   font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-faint-2);
-}
-.sc-legend-swatch {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-}
-.sc-legend-note {
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--text-faint-2);
+  font-weight: 600;
+  font-size: 12px;
 }
 
 /* On narrower widths let the board scroll horizontally instead of crushing. */
