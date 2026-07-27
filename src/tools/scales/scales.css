@@ -168,13 +168,15 @@
   color: var(--accent-bright);
 }
 
-/* ---- Scale strip ---- */
+/* ---- Scale strip (lives in the board header) ---- */
 .sc-strip {
   display: flex;
   align-items: flex-end;
   gap: 16px;
-  margin: 26px 2px 18px;
   flex-wrap: wrap;
+}
+.sc-strip > .gt-label {
+  align-self: center;
 }
 .sc-strip-cluster {
   display: flex;
@@ -434,6 +436,11 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 14px 22px;
+}
+/* Keep the right-side unit pinned right even when the row wraps. */
+.sc-board-header > .sc-unit:last-child,
+.sc-board-footer > .sc-unit:last-child {
+  margin-left: auto;
 }
 
 /* ---- Custom tuning popup ---- */

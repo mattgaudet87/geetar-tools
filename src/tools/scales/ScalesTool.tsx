@@ -119,57 +119,14 @@ export function ScalesTool() {
 
       </div>
 
-      {/* Scale strip */}
-      <div className="sc-strip">
-        <span className="gt-label">Scale</span>
-        {strip.map((entry, idx) => (
-          <ScaleStripItem key={idx} entry={entry} />
-        ))}
-      </div>
-
       {/* Board panel */}
       <div className="sc-board">
         <div className="sc-board-header">
-          <div className="sc-board-header-group">
-            <div className="sc-unit">
-              <span className="gt-label">Dots</span>
-              <div className="sc-seg">
-                <button
-                  className={mode === 'deg' ? 'is-active' : ''}
-                  onClick={() => setMode('deg')}
-                >
-                  Degrees
-                </button>
-                <button
-                  className={mode === 'note' ? 'is-active' : ''}
-                  onClick={() => setMode('note')}
-                >
-                  Note names
-                </button>
-              </div>
-            </div>
-
-            {capo > 0 && (
-              <div className="sc-unit">
-                <span className="gt-label">Note names</span>
-                <div className="sc-seg">
-                  <button
-                    className={!capoView ? 'is-active' : ''}
-                    onClick={() => setCapoView(false)}
-                    title="Show the actual sounding pitch at each fret"
-                  >
-                    True notes
-                  </button>
-                  <button
-                    className={capoView ? 'is-active' : ''}
-                    onClick={() => setCapoView(true)}
-                    title="Name notes as if the capo were the nut (shape thinking)"
-                  >
-                    Capo as nut
-                  </button>
-                </div>
-              </div>
-            )}
+          <div className="sc-strip">
+            <span className="gt-label">Scale</span>
+            {strip.map((entry, idx) => (
+              <ScaleStripItem key={idx} entry={entry} />
+            ))}
           </div>
 
           <div className="sc-unit">
@@ -395,6 +352,46 @@ export function ScalesTool() {
                 ))}
               </select>
             </div>
+
+            <div className="sc-unit">
+              <span className="gt-label">Dots</span>
+              <div className="sc-seg">
+                <button
+                  className={mode === 'deg' ? 'is-active' : ''}
+                  onClick={() => setMode('deg')}
+                >
+                  Degrees
+                </button>
+                <button
+                  className={mode === 'note' ? 'is-active' : ''}
+                  onClick={() => setMode('note')}
+                >
+                  Note names
+                </button>
+              </div>
+            </div>
+
+            {capo > 0 && (
+              <div className="sc-unit">
+                <span className="gt-label">Note names</span>
+                <div className="sc-seg">
+                  <button
+                    className={!capoView ? 'is-active' : ''}
+                    onClick={() => setCapoView(false)}
+                    title="Show the actual sounding pitch at each fret"
+                  >
+                    True notes
+                  </button>
+                  <button
+                    className={capoView ? 'is-active' : ''}
+                    onClick={() => setCapoView(true)}
+                    title="Name notes as if the capo were the nut (shape thinking)"
+                  >
+                    Capo as nut
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="sc-unit">
