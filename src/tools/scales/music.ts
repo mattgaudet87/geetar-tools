@@ -85,6 +85,10 @@ export interface BoardDot {
  * Build the fretboard. Returns, for each string (display order high->low),
  * the open-note letter plus an array of length fretCount+1 where each entry is
  * either a BoardDot (note is in scale) or null (not in scale).
+ *
+ * noteShift only affects note-name labels: semitones to subtract, used for
+ * "capo view" where notes are named as if the capo were the nut. Which frets
+ * light up, degree labels, and audio pitches are unaffected.
  */
 export function buildBoard(
   root: number,
@@ -92,6 +96,7 @@ export function buildBoard(
   tuning: number[],
   fretCount: number,
   mode: 'deg' | 'note',
+  noteShift = 0,
 ): { stringLabel: string; frets: (BoardDot | null)[] }[] {
   const intervals = SCALES[scaleName]
   const scalePitchClasses = new Set(intervals.map((iv) => (root + iv) % 12))
@@ -106,7 +111,8 @@ export function buildBoard(
       const pc = (openPc + f) % 12
       if (scalePitchClasses.has(pc)) {
         const isRoot = pc === root
-        const label = mode === 'deg' ? degreeByPc[pc] : NOTES[pc]
+        const label =
+          mode === 'deg' ? degreeByPc[pc] : NOTES[pitchClass(pc - noteShift)]
         frets.push({ isRoot, label, midi: openMidi + f })
       } else {
         frets.push(null)

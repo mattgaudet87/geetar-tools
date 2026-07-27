@@ -26,6 +26,8 @@ export function ScalesTool() {
   const [mode, setMode] = useState<'deg' | 'note'>('deg')
   const [sound, setSound] = useState(true)
   const [capo, setCapo] = useState(0)
+  // false = true sounding notes; true = notes named as if the capo were the nut
+  const [capoView, setCapoView] = useState(false)
   const [material, setMaterial] = useState('Walnut')
   const [tuning, setTuning] = useState<number[]>([64, 59, 55, 50, 45, 40])
 
@@ -36,9 +38,10 @@ export function ScalesTool() {
   const mat = MATERIALS[material]
   const presetName = useMemo(() => presetNameFor(tuning), [tuning])
 
+  const noteShift = capoView ? capo : 0
   const board = useMemo(
-    () => buildBoard(root, scale, tuning, fretCount, mode),
-    [root, scale, tuning, fretCount, mode],
+    () => buildBoard(root, scale, tuning, fretCount, mode, noteShift),
+    [root, scale, tuning, fretCount, mode, noteShift],
   )
   const strip = useMemo(() => buildScaleStrip(root, scale), [root, scale])
 
@@ -121,6 +124,28 @@ export function ScalesTool() {
               ))}
             </select>
           </div>
+
+          {capo > 0 && (
+            <div className="sc-unit">
+              <span className="gt-label">Note names</span>
+              <div className="sc-seg">
+                <button
+                  className={!capoView ? 'is-active' : ''}
+                  onClick={() => setCapoView(false)}
+                  title="Show the actual sounding pitch at each fret"
+                >
+                  True notes
+                </button>
+                <button
+                  className={capoView ? 'is-active' : ''}
+                  onClick={() => setCapoView(true)}
+                  title="Name notes as if the capo were the nut (shape thinking)"
+                >
+                  Capo as nut
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="sc-unit">
             <span className="gt-label">Neck</span>
@@ -234,7 +259,14 @@ export function ScalesTool() {
             {NOTES[root]} {scale}
           </div>
           <div className="sc-fret-range">
-            {capo > 0 ? `CAPO ${capo} · ` : ''}0–{fretCount} FRETS
+            {capo > 0
+              ? `CAPO ${capo}${
+                  capoView
+                    ? ` · ${NOTES[pitchClass(root - capo)]} SHAPES`
+                    : ''
+                } · `
+              : ''}
+            0–{fretCount} FRETS
           </div>
         </div>
 
@@ -261,7 +293,7 @@ export function ScalesTool() {
             <div className="sc-string-labels">
               {board.map((_, i) => (
                 <div className="sc-string-label" key={i}>
-                  {NOTES[pitchClass(tuning[i] + capo)]}
+                  {NOTES[pitchClass(tuning[i] + capo - noteShift)]}
                 </div>
               ))}
             </div>
@@ -380,7 +412,11 @@ export function ScalesTool() {
             <span className="sc-legend-item">Click a note to hear it</span>
           </div>
           <div className="sc-legend-note">
-            {mode === 'deg' ? 'Numbers = scale degree' : 'Letters = note name'}
+            {mode === 'deg'
+              ? 'Numbers = scale degree'
+              : capoView && capo > 0
+                ? 'Letters = note names with the capo as the nut'
+                : 'Letters = note name'}
           </div>
         </div>
       </div>
