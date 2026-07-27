@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { ScalesIcon } from '../../shared/icons'
 import { MATERIALS, MATERIAL_NAMES } from './materials'
 import { playNote } from './audio'
+import { loadSongs, persistSongs, type SongPreset } from './presets'
 import {
   NOTES,
   SCALE_NAMES,
@@ -31,6 +32,18 @@ export function ScalesTool() {
   const [material, setMaterial] = useState('Walnut')
   const [tuning, setTuning] = useState<number[]>([64, 59, 55, 50, 45, 40])
   const [customOpen, setCustomOpen] = useState(false)
+
+  // Saved song presets (persisted in localStorage).
+  const [songs, setSongs] = useState<SongPreset[]>(loadSongs)
+  const [saveOpen, setSaveOpen] = useState(false)
+  const [songName, setSongName] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (pendingDelete === null) return
+    const t = setTimeout(() => setPendingDelete(null), 5000)
+    return () => clearTimeout(t)
+  }, [pendingDelete])
 
   // Config points — fixed for now, easy to wire to controls later (see README).
   const lefty = false
@@ -78,6 +91,66 @@ export function ScalesTool() {
     if (sound) playNote(midi)
   }
 
+  function songIsActive(s: SongPreset): boolean {
+    return (
+      s.root === root &&
+      s.scale === scale &&
+      s.mode === mode &&
+      s.capo === capo &&
+      (capo === 0 || s.capoView === capoView) &&
+      s.tuning.length === tuning.length &&
+      s.tuning.every((v, i) => v === tuning[i])
+    )
+  }
+
+  function saveSong() {
+    const name = songName.trim()
+    if (!name) return
+    const entry: SongPreset = {
+      name,
+      root,
+      scale,
+      mode,
+      capo,
+      capoView,
+      tuning: [...tuning],
+    }
+    setSongs((prev) => {
+      const idx = prev.findIndex((s) => s.name === name)
+      const next =
+        idx >= 0 ? prev.map((s, i) => (i === idx ? entry : s)) : [...prev, entry]
+      persistSongs(next)
+      return next
+    })
+    setSongName('')
+    setSaveOpen(false)
+  }
+
+  function applySong(s: SongPreset) {
+    setRoot(s.root)
+    setScale(s.scale)
+    setMode(s.mode)
+    setCapo(s.capo)
+    setCapoView(s.capoView)
+    setTuning([...s.tuning])
+    setCustomOpen(false)
+  }
+
+  // Deleting is two-click: first click arms the button ("Delete?"), a second
+  // click within 3s confirms. Anything else lets it disarm.
+  function onDeleteClick(name: string) {
+    if (pendingDelete === name) {
+      setSongs((prev) => {
+        const next = prev.filter((s) => s.name !== name)
+        persistSongs(next)
+        return next
+      })
+      setPendingDelete(null)
+    } else {
+      setPendingDelete(name)
+    }
+  }
+
   return (
     <div className="sc-page">
       {/* Header */}
@@ -85,6 +158,77 @@ export function ScalesTool() {
 
       {/* Controls panel */}
       <div className="sc-controls">
+        {/* Row — saved songs */}
+        <div className="sc-row sc-row-pills">
+          <span className="gt-label sc-fixed-label">Songs</span>
+          <div className="sc-pill-group">
+            {songs.map((s) => (
+              <div
+                key={s.name}
+                className={`sc-song ${songIsActive(s) ? 'is-active' : ''}`}
+              >
+                <button
+                  className="sc-song-load"
+                  onClick={() => applySong(s)}
+                  title={`${NOTES[s.root]} ${s.scale}${
+                    s.capo > 0 ? ` · capo ${s.capo}` : ''
+                  }`}
+                >
+                  {s.name}
+                </button>
+                <button
+                  className={`sc-song-del ${
+                    pendingDelete === s.name ? 'is-armed' : ''
+                  }`}
+                  aria-label={`Delete ${s.name}`}
+                  onClick={() => onDeleteClick(s.name)}
+                >
+                  {pendingDelete === s.name ? 'Delete?' : '×'}
+                </button>
+              </div>
+            ))}
+
+            {saveOpen ? (
+              <div className="sc-song-form">
+                <input
+                  className="sc-song-input"
+                  autoFocus
+                  placeholder="Song name"
+                  value={songName}
+                  onChange={(e) => setSongName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') saveSong()
+                    if (e.key === 'Escape') {
+                      setSaveOpen(false)
+                      setSongName('')
+                    }
+                  }}
+                />
+                <button className="sc-song-confirm" onClick={saveSong}>
+                  Save
+                </button>
+                <button
+                  className="sc-song-cancel"
+                  onClick={() => {
+                    setSaveOpen(false)
+                    setSongName('')
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button
+                className="sc-song-add"
+                onClick={() => setSaveOpen(true)}
+                title="Save the current key, scale, capo and tuning as a song"
+              >
+                + Save current
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Row B — root */}
         <div className="sc-row sc-row-pills">
           <span className="gt-label sc-fixed-label">Root</span>
@@ -129,15 +273,32 @@ export function ScalesTool() {
             ))}
           </div>
 
-          <div className="sc-unit">
-            <span className="gt-label">Sound</span>
-            <button
-              className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
-              onClick={() => setSound((s) => !s)}
-            >
-              <span className="dot" />
-              {sound ? 'On' : 'Off'}
-            </button>
+          <div className="sc-board-header-group">
+            <div className="sc-unit">
+              <span className="gt-label">Neck</span>
+              <select
+                className="gt-select"
+                value={material}
+                onChange={(e) => setMaterial(e.target.value)}
+              >
+                {MATERIAL_NAMES.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="sc-unit">
+              <span className="gt-label">Sound</span>
+              <button
+                className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
+                onClick={() => setSound((s) => !s)}
+              >
+                <span className="dot" />
+                {sound ? 'On' : 'Off'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -392,21 +553,6 @@ export function ScalesTool() {
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="sc-unit">
-            <span className="gt-label">Neck</span>
-            <select
-              className="gt-select"
-              value={material}
-              onChange={(e) => setMaterial(e.target.value)}
-            >
-              {MATERIAL_NAMES.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
           </div>
         </div>
       </div>

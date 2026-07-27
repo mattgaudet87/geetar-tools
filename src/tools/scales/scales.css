@@ -67,6 +67,103 @@
   box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
 }
 
+/* ---- Saved songs ---- */
+.sc-song {
+  display: inline-flex;
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.sc-song-load {
+  padding: 7px 5px 7px 10px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: #a7afbd;
+}
+.sc-song-del {
+  padding: 7px 9px 7px 5px;
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+  line-height: 1;
+  color: var(--text-muted);
+}
+.sc-song-del:hover {
+  color: #e58a8a;
+}
+.sc-song-del.is-armed {
+  color: #e57373;
+}
+.sc-song.is-active {
+  background: rgba(52, 211, 153, 0.13);
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
+}
+.sc-song.is-active .sc-song-load {
+  color: var(--accent-bright);
+}
+.sc-song-add {
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px dashed var(--control-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.sc-song-add:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
+}
+.sc-song-form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sc-song-input {
+  width: 160px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: var(--control-bg-2);
+  border: 1px solid var(--border-panel);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+}
+.sc-song-input:focus {
+  outline: none;
+  border-color: rgba(52, 211, 153, 0.5);
+}
+.sc-song-confirm {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  color: var(--accent-bright);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.sc-song-cancel {
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--control-border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+
 /* ---- Segmented toggle (Dots) ---- */
 .sc-seg {
   display: flex;
@@ -438,7 +535,7 @@
   gap: 14px 22px;
 }
 /* Keep the right-side unit pinned right even when the row wraps. */
-.sc-board-header > .sc-unit:last-child,
+.sc-board-header > :last-child,
 .sc-board-footer > .sc-unit:last-child {
   margin-left: auto;
 }
