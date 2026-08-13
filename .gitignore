@@ -4,6 +4,9 @@ dist-ssr
 *.local
 .DS_Store
 
+# Netlify CLI local link state (machine-specific, not part of the app)
+.netlify
+
 # TypeScript build output / incremental info (tsc -b emits these)
 *.tsbuildinfo
 vite.config.js
