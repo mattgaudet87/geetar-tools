@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Brand } from './Brand'
+import { playPedalSwitch } from './sfx'
 import { TOOLS } from '../tools/registry'
 
 /*
@@ -98,7 +99,12 @@ export function Hub() {
           }
 
           return tool.ready ? (
-            <Link key={tool.id} to={`/${tool.path}`} style={cardStyle}>
+            <Link
+              key={tool.id}
+              to={`/${tool.path}`}
+              style={cardStyle}
+              onClick={playPedalSwitch}
+            >
               {inner}
             </Link>
           ) : (

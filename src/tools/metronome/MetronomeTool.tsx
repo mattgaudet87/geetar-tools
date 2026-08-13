@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { MetronomeIcon } from '../../shared/icons'
+import { playMetroAfterPedal } from '../../shared/sfx'
 import './metronome.css'
 
 const MIN_BPM = 40
@@ -44,6 +45,11 @@ export function MetronomeTool() {
   accentRef.current = accent
 
   const tapsRef = useRef<number[]>([])
+
+  // Opening the metronome gets its own flourish, right after the pedal click
+  // that the hub card played on the way in. Cancelling on unmount keeps it from
+  // sounding over the hub if you bounce straight back out.
+  useEffect(() => playMetroAfterPedal(), [])
 
   function getCtx(): AudioContext {
     if (!ctxRef.current) {

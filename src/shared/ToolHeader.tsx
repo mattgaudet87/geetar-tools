@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { playPedalSwitch } from './sfx'
 
 /*
  * Shared header for every tool page. Layout is a 3-column grid so the title
@@ -12,7 +13,12 @@ export function ToolHeader({ name, icon }: { name: string; icon?: ReactNode }) {
   return (
     <header className="gt-toolhead">
       <div className="gt-toolhead-left">
-        <Link to="/" className="gt-back" aria-label="Back to all tools">
+        <Link
+          to="/"
+          className="gt-back"
+          aria-label="Back to all tools"
+          onClick={playPedalSwitch}
+        >
           <span aria-hidden>←</span> All tools
         </Link>
         {icon && (
