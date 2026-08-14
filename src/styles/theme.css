@@ -9,6 +9,10 @@
   --font-display: 'Sora', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 
+  /* Pedalboard fonts — the hub today, every tool page once they're reskinned. */
+  --font-board: 'Archivo', system-ui, sans-serif;
+  --font-board-mono: 'IBM Plex Mono', monospace;
+
   /* Surfaces */
   --bg-app: radial-gradient(120% 90% at 50% -10%, #161d27 0%, #0d1117 55%, #0a0d12 100%);
   --bg-panel: linear-gradient(180deg, #161d28, #131923);
@@ -46,6 +50,21 @@
   --control-bg-2: #0f141d;
   --control-border: #28313f;
   --control-border-2: #242d3b;
+
+  /* Pedalboard (hub). The six pedal finishes live in Hub.tsx, next to the
+     tools they paint; everything shared by the board sits here. */
+  --board: #1a1512;
+  --board-edge: #33291f;
+  --board-rule: #3d3126;
+  --brand: #8a4340;
+  --cream: #f3ebdc;
+  --cream-hi: #fdf7ec;
+  --cream-body: rgba(253, 247, 236, 0.86);
+  --muted-label: #9a8b78;
+  --hover-edge: #e0c9a0;
+  --knob-top: #e7dfd2;
+  --knob-bot: #b0a493;
+  --knob-edge: #7d7466;
 
   color-scheme: dark;
 }
@@ -173,4 +192,285 @@ a {
 .gt-back:hover {
   border-color: rgba(52, 211, 153, 0.4);
   color: var(--accent-bright);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * The hub — a pedalboard. Six painted stompboxes, one per tool.
+ *
+ * Each tile takes its finish from custom properties set inline in Hub.tsx
+ * (--pedal-top/-bot/-edge/-disc/-led/-led-glow/-hi), so all the state work —
+ * hover, press, focus, the phone layout — is written once, here.
+ * ───────────────────────────────────────────────────────────────────────── */
+
+/* Flat board behind the whole page; the hub adds this class while it's open. */
+body.gt-board-bg {
+  background: var(--board);
+}
+
+.gt-hub {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 40px 44px 52px;
+  font-family: var(--font-board);
+}
+
+.gt-hub-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px dashed var(--board-rule);
+  margin-bottom: 30px;
+}
+.gt-hub-hint {
+  font-family: var(--font-board-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted-label);
+}
+
+/* Brand mark + wordmark (hub only). */
+.gt-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.gt-brand-plate {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--brand);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 4px 10px rgba(0, 0, 0, 0.5);
+  flex-shrink: 0;
+}
+.gt-brand-plate svg {
+  width: 25px;
+  height: 25px;
+}
+.gt-brand-word {
+  font-family: var(--font-board);
+  font-weight: 800;
+  font-size: 31px;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+}
+
+.gt-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+/* One pedal. The whole tile is the link. */
+.gt-pedal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 18px 20px;
+  border-radius: 14px;
+  text-decoration: none;
+  background: linear-gradient(180deg, var(--pedal-top), var(--pedal-bot));
+  border: 1px solid var(--pedal-edge);
+  box-shadow: 0 14px 26px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, var(--pedal-hi));
+  transition: border-color 140ms ease, transform 140ms ease, box-shadow 140ms ease;
+}
+/* Hover is for pointers only — on touch it would stick after a tap. */
+@media (hover: hover) {
+  .gt-pedal:hover {
+    border-color: var(--hover-edge);
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, var(--pedal-hi));
+  }
+}
+/* The stomp. */
+.gt-pedal:active {
+  transform: translateY(1px) scale(0.995);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+  transition-duration: 60ms;
+}
+.gt-pedal:active .gt-pedal-knob {
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+.gt-pedal:focus-visible {
+  outline: 2px solid var(--hover-edge);
+  outline-offset: 3px;
+}
+/* A tool that isn't ready yet: same enclosure, unplugged. */
+.gt-pedal-off {
+  opacity: 0.6;
+  cursor: default;
+}
+.gt-pedal-off .gt-pedal-led {
+  box-shadow: none;
+  filter: grayscale(1);
+}
+
+.gt-pedal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.gt-pedal-serial {
+  font-family: var(--font-board-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(243, 235, 220, 0.62);
+}
+.gt-pedal-led {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--pedal-led);
+  box-shadow: 0 0 10px var(--pedal-led-glow), inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.gt-pedal-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.gt-pedal-disc {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--pedal-disc);
+  color: var(--cream);
+  box-shadow: inset 0 0 0 1px rgba(243, 235, 220, 0.28);
+  flex-shrink: 0;
+}
+.gt-pedal-disc svg {
+  width: 23px;
+  height: 23px;
+}
+.gt-pedal-name {
+  font-weight: 800;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--cream-hi);
+}
+.gt-pedal-blurb {
+  font-family: var(--font-board-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--cream-body);
+  text-wrap: pretty;
+}
+.gt-pedal-foot {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(253, 247, 236, 0.2);
+  display: flex;
+  justify-content: flex-end;
+}
+.gt-pedal-knob {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--knob-top), var(--knob-bot));
+  border: 1px solid var(--knob-edge);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.7), 0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* Every tile carries both a full and a short label; the layout picks one.
+   display:none (rather than hiding visually) keeps screen readers to one. */
+.gt-pedal-short {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .gt-hub-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 13px;
+  }
+}
+
+/* Phones: narrower tiles, so the icon stacks above a shorter name and blurb. */
+@media (max-width: 600px) {
+  .gt-hub {
+    padding: 26px 18px 30px;
+  }
+  .gt-hub-head {
+    padding-bottom: 0;
+    border-bottom: none;
+    margin-bottom: 20px;
+  }
+  .gt-hub-hint {
+    display: none;
+  }
+  .gt-brand {
+    gap: 13px;
+  }
+  .gt-brand-plate {
+    width: 40px;
+    height: 40px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+  .gt-brand-plate svg {
+    width: 22px;
+    height: 22px;
+  }
+  .gt-brand-word {
+    font-size: 25px;
+  }
+
+  .gt-pedal {
+    gap: 11px;
+    padding: 15px 14px 16px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, var(--pedal-hi));
+  }
+  @media (hover: hover) {
+    .gt-pedal:hover {
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, var(--pedal-hi));
+    }
+  }
+  /* Unwrap the name row so the disc and name stack with everything else. */
+  .gt-pedal-name-row {
+    display: contents;
+  }
+  .gt-pedal-serial {
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+  }
+  .gt-pedal-led {
+    width: 10px;
+    height: 10px;
+    box-shadow: 0 0 9px var(--pedal-led-glow);
+  }
+  .gt-pedal-name {
+    font-size: 19px;
+    letter-spacing: normal;
+  }
+  .gt-pedal-blurb {
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .gt-pedal-foot {
+    display: none;
+  }
+  .gt-pedal-full {
+    display: none;
+  }
+  .gt-pedal-short {
+    display: inline;
+  }
+}
+
+/* Keep the colour and shadow shifts, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .gt-pedal,
+  .gt-pedal:hover,
+  .gt-pedal:active {
+    transform: none;
+  }
 }
