@@ -63,14 +63,22 @@ export function playPedalSwitch(): void {
 let metroTimer: number | null = null
 
 /**
- * The metronome sound, queued to start once the pedal click has finished.
- * Any already-pending metro is dropped first, so a double call only ever
- * sounds once. Returns a cancel function so a component that unmounts before
- * the sound fires (a quick in-and-out) doesn't play it over the next screen.
+ * How early the metro comes in, in ms. The click and the metro overlap by this
+ * much — raise it to bring the metro further forward, drop it to 0 to wait for
+ * the click to finish.
+ */
+const METRO_LEAD_MS = 1000
+
+/**
+ * The metronome sound, queued to come in as the pedal click ends (overlapping
+ * its tail by METRO_LEAD_MS). Any already-pending metro is dropped first, so a
+ * double call only ever sounds once. Returns a cancel function so a component
+ * that unmounts before the sound fires (a quick in-and-out) doesn't play it
+ * over the next screen.
  */
 export function playMetroAfterPedal(): () => void {
   if (metroTimer !== null) window.clearTimeout(metroTimer)
-  const wait = Math.max(0, pedalEndsAt - performance.now())
+  const wait = Math.max(0, pedalEndsAt - performance.now() - METRO_LEAD_MS)
   metroTimer = window.setTimeout(() => {
     metroTimer = null
     play('metro')
