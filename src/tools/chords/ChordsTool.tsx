@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { ChordsIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { ChordDiagram } from './ChordDiagram'
 import { ChordFinder } from './ChordFinder'
 import { strum } from './audio'
@@ -15,7 +18,14 @@ import {
 } from './chords'
 import './chords.css'
 
+const theme = TOOL_PAGE_THEME.chords
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function ChordsTool() {
+  useToolPageBackground(theme)
   const [view, setView] = useState<'lookup' | 'finder'>('lookup')
   const [root, setRoot] = useState(0) // C
   const [quality, setQuality] = useState('Major')
@@ -36,8 +46,8 @@ export function ChordsTool() {
   }
 
   return (
-    <div className="ch-page">
-      <ToolHeader name="Chords" icon={<ChordsIcon />} />
+    <div className="ch-page" style={pageStyle}>
+      <ToolHeader name="Chords" icon={<ChordsIcon />} serial={theme.serial} />
 
       {/* Mode: look up a chord you know, or find one from notes you play */}
       <div className="ch-mode-row">

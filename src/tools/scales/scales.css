@@ -1,19 +1,40 @@
-/* Scale Visualizer — tool-specific styles. Theme tokens come from theme.css. */
+/* Scale Visualizer — "On the board" tool-page reskin. Neutrals + fonts come
+   from theme.css; --accent / --finish come from the page root (ScalesTool.tsx). */
 
 .sc-page {
   max-width: 1180px;
   margin: 0 auto;
-  padding: 40px 28px 64px;
+  padding: 22px 24px 26px;
+  font-family: var(--font-board-mono);
+
+  /* Root-dot text colours — dark, lifted from this tool's own page gradient. */
+  --sc-root-ink: #3a1512;
+  --sc-scale-ink: #3a2a20;
 }
 
-/* ---- Controls panel ---- */
+.sc-page .gt-label {
+  font-family: var(--font-board-mono);
+  letter-spacing: 0.2em;
+  color: var(--ink-faint);
+}
+.sc-page .gt-select {
+  font-family: var(--font-board-mono);
+  font-weight: 500;
+  background-color: var(--panel-2);
+  border-color: var(--edge-2);
+  color: var(--ink);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23fdf7ec' stroke-opacity='0.55' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.sc-page .gt-select:hover {
+  border-color: var(--accent);
+}
+
+/* ---- Panel A — selection ---- */
 .sc-controls {
-  background: var(--bg-panel);
-  border: 1px solid var(--border-panel);
-  border-radius: 16px;
-  padding: 6px 22px 4px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset,
-    0 14px 40px rgba(0, 0, 0, 0.35);
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  padding: 6px 18px 4px;
 }
 
 .sc-row {
@@ -22,7 +43,7 @@
   flex-wrap: wrap;
 }
 .sc-row + .sc-row {
-  border-top: 1px solid var(--divider);
+  border-top: 1px solid var(--rule);
 }
 
 .sc-row-pills {
@@ -49,80 +70,97 @@
 
 /* ---- Pills (root / scale) ---- */
 .sc-pill {
-  padding: 7px 10px;
+  padding: 8px 11px;
   border-radius: 8px;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12.5px;
   letter-spacing: 0.03em;
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  color: #a7afbd;
-  transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink);
+  transition: border-color 140ms ease, filter 140ms ease;
+}
+.sc-pill:hover {
+  border-color: var(--accent);
+}
+.sc-pill:active {
+  transform: translateY(1px);
+}
+.sc-pill:focus-visible,
+.sc-select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .sc-pill.is-active {
-  background: rgba(52, 211, 153, 0.13);
-  border: 1px solid rgba(52, 211, 153, 0.5);
-  color: var(--accent-bright);
-  box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
 /* ---- Saved songs ---- */
 .sc-song {
   display: inline-flex;
   align-items: center;
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
   border-radius: 8px;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition: background 140ms ease, border-color 140ms ease;
 }
 .sc-song-load {
   padding: 7px 5px 7px 10px;
   background: transparent;
   border: none;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12.5px;
   letter-spacing: 0.03em;
-  color: #a7afbd;
+  color: var(--ink);
 }
 .sc-song-del {
   padding: 7px 9px 7px 5px;
   background: transparent;
   border: none;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12.5px;
   line-height: 1;
-  color: var(--text-muted);
+  color: var(--ink-dim);
 }
 .sc-song-del:hover {
-  color: #e58a8a;
+  color: #e08b86;
 }
 .sc-song-del.is-armed {
-  color: #e57373;
+  color: #e08b86;
 }
 .sc-song.is-active {
-  background: rgba(52, 211, 153, 0.13);
-  border-color: rgba(52, 211, 153, 0.5);
-  box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
+  background: var(--finish);
+  border-color: color-mix(in srgb, var(--finish) 70%, white 30%);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 .sc-song.is-active .sc-song-load {
-  color: var(--accent-bright);
+  color: var(--ink-hi);
+}
+.sc-song.is-active .sc-song-del {
+  color: var(--ink-hi);
 }
 .sc-song-add {
-  padding: 7px 11px;
+  padding: 8px 12px;
   border-radius: 8px;
-  background: transparent;
-  border: 1px dashed var(--control-border);
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12.5px;
+  transition: filter 140ms ease;
 }
 .sc-song-add:hover {
-  color: var(--text-secondary);
-  border-color: var(--text-muted);
+  filter: brightness(1.08);
+}
+.sc-song-add:active {
+  transform: translateY(1px);
 }
 .sc-song-form {
   display: flex;
@@ -133,23 +171,23 @@
   width: 160px;
   padding: 7px 10px;
   border-radius: 8px;
-  background: var(--control-bg-2);
-  border: 1px solid var(--border-panel);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
   font-size: 12.5px;
 }
 .sc-song-input:focus {
   outline: none;
-  border-color: rgba(52, 211, 153, 0.5);
+  border-color: var(--accent);
 }
 .sc-song-confirm {
   padding: 7px 12px;
   border-radius: 8px;
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  color: var(--accent-bright);
-  font-family: var(--font-mono);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
 }
@@ -157,34 +195,36 @@
   padding: 7px 10px;
   border-radius: 8px;
   background: transparent;
-  border: 1px solid var(--control-border);
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
 }
 
-/* ---- Segmented toggle (Dots) ---- */
+/* ---- Segmented toggle (Dots / capo view) ---- */
 .sc-seg {
   display: flex;
-  background: var(--control-bg-2);
-  border: 1px solid var(--border-panel);
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
   border-radius: 10px;
   padding: 3px;
+  overflow: hidden;
 }
 .sc-seg button {
   padding: 8px 15px;
   border-radius: 8px;
   border: none;
   background: transparent;
-  color: #7b8492;
-  font-family: var(--font-mono);
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
+  transition: background 140ms ease, color 140ms ease;
 }
 .sc-seg button.is-active {
-  background: rgba(52, 211, 153, 0.16);
-  color: var(--accent-bright);
+  background: var(--finish);
+  color: var(--ink-hi);
 }
 
 /* ---- Sound toggle ---- */
@@ -194,31 +234,35 @@
   gap: 7px;
   padding: 8px 13px;
   border-radius: 9px;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
+  transition: filter 140ms ease, border-color 140ms ease;
 }
 .sc-sound .dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 .sc-sound.is-on {
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  color: var(--accent-bright);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
 }
 .sc-sound.is-on .dot {
-  background: #34d399;
-  box-shadow: 0 0 8px #34d399;
+  background: var(--accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 80%, transparent);
 }
 .sc-sound.is-off {
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  color: var(--text-muted);
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-dim);
+}
+.sc-sound.is-off:hover {
+  border-color: var(--accent);
 }
 .sc-sound.is-off .dot {
-  background: #4a5161;
+  background: var(--ink-dim);
 }
 
 /* ---- Tuning steppers ---- */
@@ -236,9 +280,9 @@
 .sc-stepper button {
   width: 26px;
   height: 20px;
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  color: var(--text-muted);
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-dim);
   border-radius: 6px;
   font-size: 9px;
   display: grid;
@@ -247,33 +291,40 @@
   line-height: 1;
 }
 .sc-stepper button:hover {
-  color: var(--text-secondary);
+  color: var(--ink);
+  border-color: var(--accent);
 }
 .sc-note-box {
   min-width: 34px;
   text-align: center;
   padding: 5px 6px;
   border-radius: 7px;
-  background: var(--control-bg-2);
-  border: 1px solid var(--border-panel);
-  font-family: var(--font-mono);
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  font-family: var(--font-board-mono);
   font-weight: 700;
   font-size: 13px;
-  color: var(--text-secondary);
+  color: var(--ink);
 }
 .sc-note-box.is-root {
-  color: var(--accent-bright);
+  color: var(--accent);
 }
 
-/* ---- Scale strip (lives in the board header) ---- */
+/* ---- Degree strip (lives in Panel A, below Root / Scale) ---- */
 .sc-strip {
   display: flex;
   align-items: flex-end;
   gap: 16px;
   flex-wrap: wrap;
 }
-.sc-strip > .gt-label {
+.sc-strip-label {
   align-self: center;
+  font-family: var(--font-board-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
 }
 .sc-strip-cluster {
   display: flex;
@@ -281,48 +332,48 @@
   align-items: center;
 }
 .sc-strip-deg {
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 9.5px;
   margin-bottom: 5px;
-  color: var(--text-muted-2);
+  color: var(--ink-dim);
 }
 .sc-strip-deg.is-root {
-  color: #52d6a0;
+  color: var(--accent);
 }
 .sc-strip-pill {
-  min-width: 40px;
-  padding: 8px 7px;
-  border-radius: 8px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 14px;
+  min-width: 34px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 13px;
   text-align: center;
-  background: #161d28;
-  border: 1px solid #2a3342;
-  color: var(--text-secondary);
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-hi);
 }
 .sc-strip-pill.is-root {
-  background: rgba(52, 211, 153, 0.14);
-  border: 1px solid rgba(52, 211, 153, 0.55);
-  color: var(--accent-bright);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 .sc-strip-step {
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
-  font-size: 11px;
-  color: #5a6273;
+  font-size: 9.5px;
+  color: rgba(253, 247, 236, 0.4);
   align-self: flex-end;
   margin-bottom: 10px;
 }
 
-/* ---- Board panel ---- */
+/* ---- Board panel (Panel B — fretboard) ---- */
 .sc-board {
-  background: var(--bg-board);
-  border: 1px solid var(--border-board);
-  border-radius: 18px;
-  padding: 22px 22px 18px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 14px;
+  padding: 18px;
 }
 .sc-board-header {
   display: flex;
@@ -330,9 +381,9 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px 22px;
-  margin-bottom: 18px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--divider-legend);
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
 }
 .sc-board-header-group {
   display: flex;
@@ -351,20 +402,20 @@
 .sc-fret-num {
   flex: 1;
   text-align: center;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 700;
   font-size: 11px;
-  color: #566178;
+  color: var(--ink-faint);
   padding-bottom: 6px;
 }
 .sc-fret-num.is-marker {
-  color: #6e7c93;
+  color: var(--ink-dim);
 }
 .sc-fret-num.is-capo {
-  color: var(--accent-bright);
+  color: var(--accent);
 }
 .sc-fret-num.is-behind-capo {
-  color: #39424f;
+  color: rgba(253, 247, 236, 0.22);
 }
 
 .sc-board-body {
@@ -380,10 +431,10 @@
   align-items: center;
   justify-content: flex-end;
   padding-right: 9px;
-  font-family: var(--font-mono);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
-  color: var(--text-muted-2);
+  color: var(--ink-dim);
 }
 
 .sc-surface {
@@ -484,47 +535,43 @@
 
 /* ---- Note dots ---- */
 .sc-dot {
-  width: 39px;
-  height: 39px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  font-family: var(--font-mono);
-  font-weight: 700;
-  font-size: 14px;
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 11.5px;
   cursor: pointer;
   transition: transform 0.1s ease;
-  border: 1px solid #3b4759;
+  border: 1px solid rgba(253, 247, 236, 0.22);
   user-select: none;
 }
 .sc-dot:hover {
   transform: translateY(-1px) scale(1.1);
 }
 .sc-dot.is-scale {
-  background: radial-gradient(circle at 36% 30%, #2b3545 0%, #19212e 72%);
-  color: #e2e7f0;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  background: #f3ebdc;
+  color: var(--sc-scale-ink);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  border: none;
 }
 .sc-dot.is-root {
-  background: radial-gradient(
-    circle at 36% 30%,
-    #7df0c0 0%,
-    #2fd396 46%,
-    #11b07f 100%
-  );
-  color: #04150d;
-  border: 1px solid rgba(140, 255, 210, 0.6);
-  box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15), 0 5px 12px rgba(0, 0, 0, 0.5);
+  background: var(--accent);
+  color: var(--sc-root-ink);
+  border: none;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 60%, transparent);
 }
 
-/* ---- Board footer (tuning / capo / neck) ---- */
+/* ---- Board footer (tuning / capo / dots / sound) ---- */
 .sc-board-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 18px;
-  padding-top: 16px;
-  border-top: 1px solid var(--divider-legend);
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
   flex-wrap: wrap;
   gap: 14px 22px;
 }
@@ -534,11 +581,6 @@
   flex-wrap: wrap;
   gap: 14px 22px;
 }
-/* Keep the right-side unit pinned right even when the row wraps. */
-.sc-board-header > :last-child,
-.sc-board-footer > .sc-unit:last-child {
-  margin-left: auto;
-}
 
 /* ---- Custom tuning popup ---- */
 .sc-tuning-wrap {
@@ -547,15 +589,16 @@
 .sc-tuning-edit {
   padding: 8px 13px;
   border-radius: 9px;
-  background: var(--control-bg);
-  border: 1px solid var(--control-border);
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
 }
 .sc-tuning-edit:hover {
-  color: var(--text-secondary);
+  color: var(--ink);
+  border-color: var(--accent);
 }
 .sc-pop-backdrop {
   position: fixed;
@@ -571,11 +614,10 @@
   flex-direction: column;
   gap: 12px;
   padding: 14px 18px 16px;
-  background: var(--bg-panel);
-  border: 1px solid var(--border-panel);
+  background: var(--page-bot);
+  border: 1px solid var(--edge);
   border-radius: 14px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 22px 55px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.6);
 }
 .sc-tuning-pop-head {
   display: flex;
@@ -591,10 +633,10 @@
 .sc-tuning-done {
   padding: 6px 13px;
   border-radius: 8px;
-  background: rgba(52, 211, 153, 0.12);
-  border: 1px solid rgba(52, 211, 153, 0.45);
-  color: var(--accent-bright);
-  font-family: var(--font-mono);
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
   font-weight: 600;
   font-size: 12px;
 }
@@ -602,4 +644,55 @@
 /* On narrower widths let the board scroll horizontally instead of crushing. */
 .sc-surface-scroll {
   overflow-x: auto;
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 600px) {
+  .sc-page {
+    padding: 18px 16px 24px;
+  }
+  .sc-controls {
+    padding: 4px 14px 2px;
+  }
+  .sc-board {
+    padding: 14px;
+  }
+  .sc-row-pills {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 9px;
+  }
+  .sc-fixed-label {
+    width: auto;
+  }
+  .sc-pill-group {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 2px;
+  }
+  .sc-pill,
+  .sc-song,
+  .sc-song-add {
+    flex-shrink: 0;
+  }
+  .sc-string-labels {
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    background: var(--page-bot);
+  }
+  .sc-board-footer,
+  .sc-board-header {
+    gap: 12px 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-dot,
+  .sc-pill,
+  .sc-sound,
+  .sc-song-add {
+    transition: none;
+    transform: none;
+  }
 }

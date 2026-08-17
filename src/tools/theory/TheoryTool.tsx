@@ -1,6 +1,9 @@
 import { useMemo, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { TheoryIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { strum } from '../chords/audio'
 import { playNote } from '../scales/audio'
 import { NOTES, TUNING, CHORDS, generateVoicings } from '../chords/chords'
@@ -45,13 +48,20 @@ function playChord(root: number, quality: string) {
   strum(midis)
 }
 
+const theme = TOOL_PAGE_THEME.theory
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function TheoryTool() {
+  useToolPageBackground(theme)
   const [tab, setTab] = useState<TabId>('keys')
   const [sound, setSound] = useState(true)
 
   return (
-    <div className="th-page">
-      <ToolHeader name="Music Theory" icon={<TheoryIcon />} />
+    <div className="th-page" style={pageStyle}>
+      <ToolHeader name="Music Theory" icon={<TheoryIcon />} serial={theme.serial} />
 
       <div className="th-tabrow">
         <div className="th-tabs">

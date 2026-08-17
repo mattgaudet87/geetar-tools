@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { TransposeIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { ChordDiagram } from '../chords/ChordDiagram'
 import { strum } from '../chords/audio'
 import {
@@ -30,7 +33,14 @@ interface ProgChord {
 
 const mod12 = (n: number) => ((n % 12) + 12) % 12
 
+const theme = TOOL_PAGE_THEME.transpose
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function TransposeTool() {
+  useToolPageBackground(theme)
   const [prog, setProg] = useState<ProgChord[]>([])
   const [root, setRoot] = useState(7) // G — a friendly default
   const [quality, setQuality] = useState('Major')
@@ -77,8 +87,8 @@ export function TransposeTool() {
   }
 
   return (
-    <div className="tp-page">
-      <ToolHeader name="Transpose" icon={<TransposeIcon />} />
+    <div className="tp-page" style={pageStyle}>
+      <ToolHeader name="Transpose" icon={<TransposeIcon />} serial={theme.serial} />
 
       {/* Section 1 — what you play now */}
       <div className="tp-panel">
@@ -146,42 +156,44 @@ export function TransposeTool() {
           </div>
         </div>
 
-        {prog.length === 0 ? (
-          <p className="tp-hint">
-            Add the chords of your progression above — the shapes as you'd name
-            them while playing, capo included.
-          </p>
-        ) : (
-          <>
-            <div className="tp-chips">
-              {prog.map((c, i) => (
-                <span className="tp-chip" key={i}>
-                  {sym(c.root, c.quality)}
-                  <button
-                    className="tp-chip-x"
-                    onClick={() => removeChord(i)}
-                    aria-label={`Remove ${sym(c.root, c.quality)}`}
-                  >
-                    ×
-                  </button>
-                </span>
-              ))}
-              <button className="tp-clear" onClick={() => setProg([])}>
-                Clear all
-              </button>
-            </div>
-            {capoFrom > 0 && (
-              <div className="tp-sounds-like">
-                <span className="gt-label">Actually sounds like</span>
+        <div className="tp-built">
+          {prog.length === 0 ? (
+            <p className="tp-hint">
+              Add the chords of your progression above — the shapes as you'd
+              name them while playing, capo included.
+            </p>
+          ) : (
+            <>
+              <div className="tp-chips">
                 {prog.map((c, i) => (
-                  <span className="tp-mini" key={i}>
-                    {sym(mod12(c.root + capoFrom), c.quality)}
+                  <span className="tp-chip" key={i}>
+                    {sym(c.root, c.quality)}
+                    <button
+                      className="tp-chip-x"
+                      onClick={() => removeChord(i)}
+                      aria-label={`Remove ${sym(c.root, c.quality)}`}
+                    >
+                      ×
+                    </button>
                   </span>
                 ))}
+                <button className="tp-clear" onClick={() => setProg([])}>
+                  Clear all
+                </button>
               </div>
-            )}
-          </>
-        )}
+              {capoFrom > 0 && (
+                <div className="tp-sounds-like">
+                  <span className="gt-label">Actually sounds like</span>
+                  {prog.map((c, i) => (
+                    <span className="tp-mini" key={i}>
+                      {sym(mod12(c.root + capoFrom), c.quality)}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* Section 2 — transpose it */}

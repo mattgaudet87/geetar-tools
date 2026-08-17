@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { ScalesIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { MATERIALS, MATERIAL_NAMES } from './materials'
 import { playNote } from './audio'
 import { loadSongs, persistSongs, type SongPreset } from './presets'
@@ -21,7 +24,14 @@ import {
 } from './music'
 import './scales.css'
 
+const theme = TOOL_PAGE_THEME.scales
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function ScalesTool() {
+  useToolPageBackground(theme)
   const [root, setRoot] = useState(9) // A
   const [scale, setScale] = useState('Major')
   const [mode, setMode] = useState<'deg' | 'note'>('deg')
@@ -152,9 +162,9 @@ export function ScalesTool() {
   }
 
   return (
-    <div className="sc-page">
+    <div className="sc-page" style={pageStyle}>
       {/* Header */}
-      <ToolHeader name="Scales" icon={<ScalesIcon />} />
+      <ToolHeader name="Scales" icon={<ScalesIcon />} serial={theme.serial} />
 
       {/* Controls panel */}
       <div className="sc-controls">
@@ -261,44 +271,35 @@ export function ScalesTool() {
           </div>
         </div>
 
+        {/* Row D — degree strip */}
+        <div className="sc-row sc-row-pills">
+          <div className="sc-strip">
+            <span className="sc-strip-label">
+              {`${NOTES[root]} ${scale}`.toUpperCase()}
+            </span>
+            {strip.map((entry, idx) => (
+              <ScaleStripItem key={idx} entry={entry} />
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Board panel */}
       <div className="sc-board">
         <div className="sc-board-header">
-          <div className="sc-strip">
-            <span className="gt-label">Scale</span>
-            {strip.map((entry, idx) => (
-              <ScaleStripItem key={idx} entry={entry} />
-            ))}
-          </div>
-
-          <div className="sc-board-header-group">
-            <div className="sc-unit">
-              <span className="gt-label">Neck</span>
-              <select
-                className="gt-select"
-                value={material}
-                onChange={(e) => setMaterial(e.target.value)}
-              >
-                {MATERIAL_NAMES.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="sc-unit">
-              <span className="gt-label">Sound</span>
-              <button
-                className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
-                onClick={() => setSound((s) => !s)}
-              >
-                <span className="dot" />
-                {sound ? 'On' : 'Off'}
-              </button>
-            </div>
+          <div className="sc-unit">
+            <span className="gt-label">Neck</span>
+            <select
+              className="gt-select"
+              value={material}
+              onChange={(e) => setMaterial(e.target.value)}
+            >
+              {MATERIAL_NAMES.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -553,6 +554,17 @@ export function ScalesTool() {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="sc-unit">
+            <span className="gt-label">Sound</span>
+            <button
+              className={`sc-sound ${sound ? 'is-on' : 'is-off'}`}
+              onClick={() => setSound((s) => !s)}
+            >
+              <span className="dot" />
+              {sound ? 'On' : 'Off'}
+            </button>
           </div>
         </div>
       </div>

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { MetronomeIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { playMetroAfterPedal } from '../../shared/sfx'
 import './metronome.css'
 
@@ -22,7 +25,14 @@ function tempoTerm(bpm: number): string {
 
 const clampBpm = (n: number) => Math.max(MIN_BPM, Math.min(MAX_BPM, Math.round(n)))
 
+const theme = TOOL_PAGE_THEME.metronome
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function MetronomeTool() {
+  useToolPageBackground(theme)
   const [bpm, setBpm] = useState(120)
   const [beats, setBeats] = useState(4)
   const [accent, setAccent] = useState(true)
@@ -141,8 +151,8 @@ export function MetronomeTool() {
   const fill = ((bpm - MIN_BPM) / (MAX_BPM - MIN_BPM)) * 100
 
   return (
-    <div className="mt-page">
-      <ToolHeader name="Metronome" icon={<MetronomeIcon />} />
+    <div className="mt-page" style={pageStyle}>
+      <ToolHeader name="Metronome" icon={<MetronomeIcon />} serial={theme.serial} />
 
       <div className="mt-card">
         <div className="mt-term">{tempoTerm(bpm)}</div>

@@ -11,10 +11,12 @@ import { TUNING, type Voicing } from './chords'
  */
 
 const S = 6 // strings
-const ROWS = 5 // fret rows shown
-const DX = 17 // string spacing
-const DY = 21 // fret spacing
-const PAD_X = 18
+const ROWS = 5 // fret rows shown — generateVoicings() allows open voicings up
+// to fret 5 (see chords.ts), so this stays 5 even though the spec's card
+// mockup shows 4; a 4-row window would clip real, playable voicings.
+const DX = 20 // string spacing
+const DY = 22 // fret spacing
+const PAD_X = 16
 const PAD_TOP = 22
 const PAD_BOTTOM = 8
 const DOT_R = 6.5
@@ -119,7 +121,7 @@ export function ChordDiagram({
                 cy={y}
                 r={4}
                 fill="none"
-                stroke={isRoot(s, 0) ? 'var(--accent-bright)' : 'var(--ch-mark)'}
+                stroke={isRoot(s, 0) ? 'var(--accent)' : 'var(--ch-mark)'}
                 strokeWidth={1.4}
               />
             )
@@ -154,8 +156,8 @@ export function ChordDiagram({
               cx={cx}
               cy={cy}
               r={DOT_R}
-              fill={rootNote ? 'var(--accent-bright)' : 'var(--ch-dot)'}
-              stroke={rootNote ? 'rgba(140,255,210,0.6)' : 'none'}
+              fill={rootNote ? 'var(--accent)' : 'var(--ch-dot)'}
+              stroke={rootNote ? 'color-mix(in srgb, var(--accent) 60%, transparent)' : 'none'}
               strokeWidth={rootNote ? 1 : 0}
             />
           )

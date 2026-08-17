@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { TunerIcon } from '../../shared/icons'
+import { TOOL_PAGE_THEME } from '../../shared/toolPageTheme'
+import { useToolPageBackground } from '../../shared/useToolPageBackground'
 import { autoCorrelate } from './pitch'
 import {
   TUNING_NAMES,
@@ -13,13 +16,20 @@ import './tuner.css'
 
 const IN_TUNE_CENTS = 5
 
+const theme = TOOL_PAGE_THEME.tuner
+const pageStyle = {
+  '--accent': theme.accent,
+  '--finish': theme.finish,
+} as CSSProperties
+
 export function TunerTool() {
+  useToolPageBackground(theme)
   const [mode, setMode] = useState<'reference' | 'listen'>('reference')
   const [tuning, setTuning] = useState('Standard')
 
   return (
-    <div className="tn-page">
-      <ToolHeader name="Tuner" icon={<TunerIcon />} />
+    <div className="tn-page" style={pageStyle}>
+      <ToolHeader name="Tuner" icon={<TunerIcon />} serial={theme.serial} />
 
       <div className="tn-card">
         <div className="tn-modes">
@@ -244,24 +254,16 @@ function ListenMode() {
   // Map cents (-50..50) to needle position (0..100%).
   const needleLeft = 50 + Math.max(-50, Math.min(50, cents))
 
-  const noteClass = !note
-    ? ''
-    : inTune
-      ? 'is-intune'
-      : cents < 0
-        ? 'is-flat'
-        : 'is-sharp'
-
   return (
     <div className="tn-listen">
       <div className="tn-readout">
-        <span className={`tn-note ${note ? noteClass : 'is-empty'}`}>
+        <span className={`tn-note ${note ? '' : 'is-empty'}`}>
           {note ? note.name : '–'}
         </span>
         {note && <span className="tn-octave">{note.octave}</span>}
       </div>
 
-      <div className={`tn-cents-label ${inTune ? 'is-intune' : ''}`}>
+      <div className={`tn-cents-label ${note ? 'is-set' : ''}`}>
         {!listening
           ? 'Press listen and play a string'
           : !note
@@ -271,19 +273,21 @@ function ListenMode() {
               : `${cents > 0 ? '+' : ''}${cents} cents ${cents < 0 ? '(flat)' : '(sharp)'}`}
       </div>
 
-      <div className="tn-meter">
-        <div className="tn-meter-ticks">
-          {Array.from({ length: 11 }, (_, i) => (
-            <span key={i} className="tn-meter-tick" />
-          ))}
+      <div className={`tn-meter-wrap ${inTune ? 'is-intune' : ''}`}>
+        <div className="tn-meter">
+          <div className="tn-meter-ticks">
+            {Array.from({ length: 11 }, (_, i) => (
+              <span key={i} className="tn-meter-tick" />
+            ))}
+          </div>
+          <div className="tn-meter-center" />
+          {note && (
+            <div
+              className="tn-needle"
+              style={{ left: `calc(${needleLeft}% - 2px)` }}
+            />
+          )}
         </div>
-        <div className="tn-meter-center" />
-        {note && (
-          <div
-            className={`tn-needle ${inTune ? 'is-intune' : ''}`}
-            style={{ left: `calc(${needleLeft}% - 2px)` }}
-          />
-        )}
       </div>
       <div className="tn-scale-labels">
         <span>♭ 50</span>
