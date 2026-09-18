@@ -20,11 +20,15 @@ type SfxName = keyof typeof SOURCES
 
 const cache: Partial<Record<SfxName, HTMLAudioElement>> = {}
 
+/** Both samples played at half their original recorded volume. */
+const VOLUME = 0.5
+
 function get(name: SfxName): HTMLAudioElement {
   let el = cache[name]
   if (!el) {
     el = new Audio(SOURCES[name])
     el.preload = 'auto'
+    el.volume = VOLUME
     cache[name] = el
   }
   return el
