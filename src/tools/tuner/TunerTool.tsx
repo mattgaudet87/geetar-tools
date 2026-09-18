@@ -130,17 +130,17 @@ function ReferenceMode({
     <>
       <div className="tn-tuning-select">
         <span className="gt-label">Tuning</span>
-        <select
-          className="gt-select"
-          value={tuning}
-          onChange={(e) => setTuning(e.target.value)}
-        >
+        <div className="tn-tuning-pills">
           {TUNING_NAMES.map((t) => (
-            <option key={t} value={t}>
+            <button
+              key={t}
+              className={`tn-tuning-pill ${tuning === t ? 'is-active' : ''}`}
+              onClick={() => setTuning(t)}
+            >
               {t}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
       </div>
 
       <p className="tn-hint">
