@@ -101,19 +101,19 @@ export function ChordsTool() {
 
         {open && (
           <div className="ch-panel-body">
-            <div className="ch-unit ch-root-row">
+            <div className="ch-root-row">
               <span className="gt-label">Root</span>
-              <select
-                className="gt-select"
-                value={root}
-                onChange={(e) => setRoot(Number(e.target.value))}
-              >
+              <div className="ch-root-pills">
                 {NOTES.map((n, i) => (
-                  <option key={n} value={i}>
+                  <button
+                    key={n}
+                    className={`ch-root-pill ${root === i ? 'is-active' : ''}`}
+                    onClick={() => setRoot(i)}
+                  >
                     {n}
-                  </option>
+                  </button>
                 ))}
-              </select>
+              </div>
             </div>
 
             <div className="ch-quality-rows">

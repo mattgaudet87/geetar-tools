@@ -96,18 +96,23 @@ export function ChordFinder({
         <div className="chf-bar">
           <div className="ch-unit">
             <span className="gt-label">Capo</span>
-            <select
-              className="gt-select"
-              value={capo}
-              onChange={(e) => onCapo(Number(e.target.value))}
-            >
-              <option value={0}>None</option>
+            <div className="ch-fret-row">
+              <button
+                className={capo === 0 ? 'is-active' : ''}
+                onClick={() => onCapo(0)}
+              >
+                None
+              </button>
               {Array.from({ length: 9 }, (_, i) => i + 1).map((f) => (
-                <option key={f} value={f}>
-                  Fret {f}
-                </option>
+                <button
+                  key={f}
+                  className={capo === f ? 'is-active' : ''}
+                  onClick={() => onCapo(f)}
+                >
+                  {f}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="ch-unit">

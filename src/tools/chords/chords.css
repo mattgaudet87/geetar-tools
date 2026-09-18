@@ -119,7 +119,36 @@
   margin-top: 16px;
 }
 .ch-root-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
   margin-bottom: 14px;
+}
+.ch-root-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ch-root-pill {
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink);
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+.ch-root-pill:hover {
+  border-color: var(--accent);
+}
+.ch-root-pill.is-active {
+  background: var(--finish);
+  border-color: color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 24%, transparent);
 }
 
 /* Three category rows of compact chord chips */
@@ -432,6 +461,31 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 14px 22px;
+}
+.ch-fret-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ch-fret-row button {
+  min-width: 32px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  font-family: var(--font-board-mono);
+  font-weight: 700;
+  font-size: 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  color: var(--ink);
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+.ch-fret-row button:hover {
+  border-color: var(--accent);
+}
+.ch-fret-row button.is-active {
+  background: var(--finish);
+  border-color: color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
 }
 .chf-bar-right {
   margin-left: auto;
