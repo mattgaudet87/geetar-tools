@@ -7,31 +7,32 @@
 export function autoCorrelate(buf: Float32Array, sampleRate: number): number {
   const SIZE = buf.length
 
+  // Remove DC offset (some mic inputs have a small constant bias that
+  // otherwise skews the autocorrelation and the loudness gate below).
+  let mean = 0
+  for (let i = 0; i < SIZE; i++) mean += buf[i]
+  mean /= SIZE
+
   // Bail out if the signal is too quiet (root-mean-square gate).
+  // A guitar picked up by a laptop/phone mic rarely reaches 0.01 RMS,
+  // so a lower gate is needed or the tuner reads silence most of the time.
   let rms = 0
-  for (let i = 0; i < SIZE; i++) rms += buf[i] * buf[i]
+  for (let i = 0; i < SIZE; i++) {
+    const v = buf[i] - mean
+    rms += v * v
+  }
   rms = Math.sqrt(rms / SIZE)
-  if (rms < 0.01) return -1
+  if (rms < 0.003) return -1
 
-  // Trim near-silent samples from both ends.
-  const thres = 0.2
-  let r1 = 0
-  let r2 = SIZE - 1
-  for (let i = 0; i < SIZE / 2; i++) {
-    if (Math.abs(buf[i]) < thres) {
-      r1 = i
-      break
-    }
-  }
-  for (let i = 1; i < SIZE / 2; i++) {
-    if (Math.abs(buf[SIZE - i]) < thres) {
-      r2 = SIZE - i
-      break
-    }
-  }
+  // Work on a DC-free copy of the full buffer. The previous version trimmed
+  // to a fixed absolute-amplitude threshold (0.2), which real mic input
+  // rarely reaches consistently — the trim window shifted from frame to
+  // frame and shuffled which waveform cycles were correlated, which is what
+  // produced the jumpy, unstable readings.
+  const n = SIZE
+  const b = new Float32Array(n)
+  for (let i = 0; i < n; i++) b[i] = buf[i] - mean
 
-  const b = buf.slice(r1, r2)
-  const n = b.length
   const c = new Array<number>(n).fill(0)
   for (let i = 0; i < n; i++) {
     for (let j = 0; j < n - i; j++) c[i] += b[j] * b[j + i]

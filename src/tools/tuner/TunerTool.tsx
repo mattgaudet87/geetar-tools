@@ -176,6 +176,10 @@ function ListenMode() {
   const rafRef = useRef<number | null>(null)
   const bufRef = useRef<Float32Array<ArrayBuffer> | null>(null)
   const lastRef = useRef(0)
+  // Recent valid frequency readings, used to smooth out the display so it
+  // doesn't flicker between adjacent notes/octaves on every ~50ms sample.
+  const historyRef = useRef<number[]>([])
+  const missesRef = useRef(0)
 
   function stop() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current)
@@ -185,6 +189,8 @@ function ListenMode() {
     void ctxRef.current?.close()
     ctxRef.current = null
     analyserRef.current = null
+    historyRef.current = []
+    missesRef.current = 0
     setListening(false)
     setNote(null)
     setFreq(null)
@@ -235,12 +241,30 @@ function ListenMode() {
 
     analyser.getFloatTimeDomainData(buf)
     const f = autoCorrelate(buf, ctx.sampleRate)
+
+    const HISTORY_SIZE = 6
     if (f > 0) {
-      setFreq(f)
-      setNote(freqToNote(f))
+      missesRef.current = 0
+      const history = historyRef.current
+      history.push(f)
+      if (history.length > HISTORY_SIZE) history.shift()
+
+      // Median of recent readings smooths out single-frame noise without
+      // lagging behind a real pitch change the way a rolling average would.
+      const sorted = [...history].sort((a, b) => a - b)
+      const median = sorted[Math.floor(sorted.length / 2)]
+
+      setFreq(median)
+      setNote(freqToNote(median))
     } else {
-      setFreq(null)
-      setNote(null)
+      missesRef.current += 1
+      // Tolerate a couple of dropped frames (string decay, brief pluck gap)
+      // before clearing the readout, so it doesn't blink empty constantly.
+      if (missesRef.current > 3) {
+        historyRef.current = []
+        setFreq(null)
+        setNote(null)
+      }
     }
   }
 
