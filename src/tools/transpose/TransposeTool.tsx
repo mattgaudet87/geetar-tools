@@ -8,10 +8,11 @@ import { ChordDiagram } from '../chords/ChordDiagram'
 import { strum } from '../chords/audio'
 import {
   NOTES,
-  TUNING,
   CHORDS,
   CHORD_CATEGORIES,
   QUALITY_SHORT,
+  TUNING_PRESETS,
+  TUNING_PRESET_NAMES,
   generateVoicings,
 } from '../chords/chords'
 import './transpose.css'
@@ -53,6 +54,8 @@ export function TransposeTool() {
   const [steps, setSteps] = useState(0)
   const [capoTo, setCapoTo] = useState(0)
   const [sound, setSound] = useState(true)
+  const [tuningFrom, setTuningFrom] = useState('Standard')
+  const [tuningTo, setTuningTo] = useState('Standard')
 
   // Guided-steps controls panel: which tab is showing, and which root's
   // quality dropdown is currently expanded (hover on desktop, tap on touch).
@@ -70,8 +73,17 @@ export function TransposeTool() {
     [prog, capoFrom, steps, capoTo],
   )
   const shapeVoicings = useMemo(
-    () => prog.map((c, i) => generateVoicings(shapeRoots[i], c.quality)[0] ?? null),
-    [prog, shapeRoots],
+    () =>
+      prog.map(
+        (c, i) =>
+          generateVoicings(shapeRoots[i], c.quality, TUNING_PRESETS[tuningTo])[0] ?? null,
+      ),
+    [prog, shapeRoots, tuningTo],
+  )
+  const origVoicings = useMemo(
+    () =>
+      prog.map((c) => generateVoicings(c.root, c.quality, TUNING_PRESETS[tuningFrom])[0] ?? null),
+    [prog, tuningFrom],
   )
 
   const unchanged = steps === 0 && capoTo === capoFrom
@@ -88,10 +100,23 @@ export function TransposeTool() {
     if (!sound) return
     const v = shapeVoicings[i]
     if (!v) return
+    const tuning = TUNING_PRESETS[tuningTo]
     const midis: number[] = []
     v.frets.forEach((f, s) => {
       // Add the new capo so it sounds like it would on the real guitar.
-      if (f != null) midis.push(TUNING[s] + f + capoTo)
+      if (f != null) midis.push(tuning[s] + f + capoTo)
+    })
+    strum(midis)
+  }
+
+  function playOrig(i: number) {
+    if (!sound) return
+    const v = origVoicings[i]
+    if (!v) return
+    const tuning = TUNING_PRESETS[tuningFrom]
+    const midis: number[] = []
+    v.frets.forEach((f, s) => {
+      if (f != null) midis.push(tuning[s] + f + capoFrom)
     })
     strum(midis)
   }
@@ -210,6 +235,21 @@ export function TransposeTool() {
                 </div>
               </div>
 
+              <div className="tp-unit">
+                <span className="gt-label">Your tuning</span>
+                <select
+                  className="gt-select"
+                  value={tuningFrom}
+                  onChange={(e) => setTuningFrom(e.target.value)}
+                >
+                  {TUNING_PRESET_NAMES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="tp-unit tp-unit-right">
                 <span className="gt-label">Sound</span>
                 <button
@@ -261,6 +301,28 @@ export function TransposeTool() {
                       ))}
                     </div>
                   )}
+
+                  <div className="tp-diagrams">
+                    {prog.map((c, i) =>
+                      origVoicings[i] ? (
+                        <div className="tp-cell" key={i}>
+                          <ChordDiagram
+                            voicing={origVoicings[i]!}
+                            root={c.root}
+                            tuning={TUNING_PRESETS[tuningFrom]}
+                            onPlay={() => playOrig(i)}
+                          />
+                          <span className="tp-cell-label">{sym(c.root, c.quality)}</span>
+                        </div>
+                      ) : (
+                        <div className="tp-cell" key={i}>
+                          <span className="tp-cell-label">
+                            {sym(c.root, c.quality)} — no easy shape found
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </>
               )}
             </div>
@@ -310,6 +372,21 @@ export function TransposeTool() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              <div className="tp-unit">
+                <span className="gt-label">Output tuning</span>
+                <select
+                  className="gt-select"
+                  value={tuningTo}
+                  onChange={(e) => setTuningTo(e.target.value)}
+                >
+                  {TUNING_PRESET_NAMES.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

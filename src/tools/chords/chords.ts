@@ -16,6 +16,20 @@ export const NOTES = [
 // Standard tuning, low string -> high string (chord-chart orientation).
 export const TUNING = [40, 45, 50, 55, 59, 64]
 
+// Alternate tunings, same low -> high orientation as TUNING.
+export const TUNING_PRESETS: Record<string, number[]> = {
+  'Standard': [40, 45, 50, 55, 59, 64],
+  'Drop D': [38, 45, 50, 55, 59, 64],
+  'Drop C': [36, 43, 48, 53, 57, 62],
+  'Half Step Down': [39, 44, 49, 54, 58, 63],
+  'Whole Step Down': [38, 43, 48, 53, 57, 62],
+  'Open G': [38, 43, 50, 55, 59, 62],
+  'Open D': [38, 45, 50, 54, 57, 62],
+  'DADGAD': [38, 45, 50, 55, 57, 62],
+}
+
+export const TUNING_PRESET_NAMES = Object.keys(TUNING_PRESETS)
+
 export interface ChordDef {
   /** Intervals in semitones from the root (9ths use 14, etc.). */
   intervals: number[]
@@ -44,6 +58,9 @@ export const CHORDS: Record<string, ChordDef> = {
   'Major 9': { intervals: [0, 4, 7, 11, 14], symbol: 'maj9' },
   'Minor 9': { intervals: [0, 3, 7, 10, 14], symbol: 'm9' },
   'Dominant 9': { intervals: [0, 4, 7, 10, 14], symbol: '9' },
+  'Major 11': { intervals: [0, 4, 7, 11, 14, 17], symbol: 'maj11' },
+  'Minor 11': { intervals: [0, 3, 7, 10, 14, 17], symbol: 'm11' },
+  'Dominant 11': { intervals: [0, 4, 7, 10, 14, 17], symbol: '11' },
 }
 
 // Compact column-header labels for the chord matrix.
@@ -66,6 +83,9 @@ export const QUALITY_SHORT: Record<string, string> = {
   'Major 9': 'maj9',
   'Minor 9': 'm9',
   'Dominant 9': '9',
+  'Major 11': 'maj11',
+  'Minor 11': 'm11',
+  'Dominant 11': '11',
 }
 
 // Quality picker, grouped into tidy categories for the UI.
@@ -80,7 +100,15 @@ export const CHORD_CATEGORIES: { name: string; items: string[] }[] = [
   },
   {
     name: 'Extensions',
-    items: ['Add9', 'Major 9', 'Minor 9', 'Dominant 9'],
+    items: [
+      'Add9',
+      'Major 9',
+      'Minor 9',
+      'Dominant 9',
+      'Major 11',
+      'Minor 11',
+      'Dominant 11',
+    ],
   },
 ]
 
@@ -166,8 +194,14 @@ const LIMIT = 12 // how many voicings to surface
 
 /**
  * Generate a spread of playable voicings for a chord, ordered up the neck.
+ * `tuning` defaults to standard but accepts any 6-string low->high tuning
+ * (see TUNING_PRESETS) so shapes can be generated for alternate tunings.
  */
-export function generateVoicings(root: number, chordName: string): Voicing[] {
+export function generateVoicings(
+  root: number,
+  chordName: string,
+  tuning: number[] = TUNING,
+): Voicing[] {
   const def = CHORDS[chordName]
   const pcsAll = new Set(def.intervals.map((i) => (root + i) % 12))
 
@@ -181,12 +215,12 @@ export function generateVoicings(root: number, chordName: string): Voicing[] {
 
   const frets = new Array<number | null>(6).fill(null)
   const found: Voicing[] = []
-  const matches = (str: number, f: number) => pcsAll.has((TUNING[str] + f) % 12)
+  const matches = (str: number, f: number) => pcsAll.has((tuning[str] + f) % 12)
 
   function finalize(lo: number, hi: number) {
     if (hi < lo || hi - lo + 1 < minStrings) return
     const pcs = new Set<number>()
-    for (let s = lo; s <= hi; s++) pcs.add((TUNING[s] + (frets[s] as number)) % 12)
+    for (let s = lo; s <= hi; s++) pcs.add((tuning[s] + (frets[s] as number)) % 12)
     for (const pc of required) if (!pcs.has(pc)) return
     const nz = frets.filter((f): f is number => f != null && f > 0)
     found.push({
@@ -216,7 +250,7 @@ export function generateVoicings(root: number, chordName: string): Voicing[] {
   // The lowest sounding string carries the root (root-position voicings).
   for (let lo = 0; lo <= 3; lo++) {
     for (let bf = 0; bf <= MAX_FRET; bf++) {
-      if ((TUNING[lo] + bf) % 12 !== root) continue
+      if ((tuning[lo] + bf) % 12 !== root) continue
       frets.fill(null)
       frets[lo] = bf
       recurse(lo + 1, bf > 0 ? bf : 99, bf > 0 ? bf : 0, lo)
@@ -224,7 +258,7 @@ export function generateVoicings(root: number, chordName: string): Voicing[] {
     }
   }
 
-  return selectSpread(found, pcsAll)
+  return selectSpread(found, pcsAll, tuning)
 }
 
 function span(v: Voicing): number {
@@ -237,7 +271,7 @@ function strings(v: Voicing): number {
 }
 
 /** Dedupe, score, and pick a spread of voicings across neck positions. */
-function selectSpread(all: Voicing[], pcsAll: Set<number>): Voicing[] {
+function selectSpread(all: Voicing[], pcsAll: Set<number>, tuning: number[]): Voicing[] {
   const uniq = new Map<string, Voicing>()
   for (const v of all) {
     // Drop hybrids that mix open strings with high frets: they aren't idiomatic
@@ -257,7 +291,7 @@ function selectSpread(all: Voicing[], pcsAll: Set<number>): Voicing[] {
     let openStrings = 0
     v.frets.forEach((f, s) => {
       if (f != null) {
-        sounding.add((TUNING[s] + f) % 12)
+        sounding.add((tuning[s] + f) % 12)
         if (f === 0) openStrings++
       }
     })

@@ -33,10 +33,12 @@ export function ChordDiagram({
   voicing,
   root,
   onPlay,
+  tuning = TUNING,
 }: {
   voicing: Voicing
   root: number
   onPlay: () => void
+  tuning?: number[]
 }) {
   const { frets } = voicing
   const fretted = frets.filter((f): f is number => f != null && f > 0)
@@ -45,7 +47,7 @@ export function ChordDiagram({
   const showNut = maxF <= ROWS
   const startFret = showNut ? 1 : minF
 
-  const isRoot = (s: number, f: number) => (TUNING[s] + f) % 12 === root
+  const isRoot = (s: number, f: number) => (tuning[s] + f) % 12 === root
 
   // Barre: the lowest fretted fret held across 2+ strings.
   let barre: { fret: number; from: number; to: number } | null = null

@@ -336,12 +336,44 @@ body.gt-board-bg {
   border-bottom: 1px dashed var(--board-rule);
   margin-bottom: 30px;
 }
+.gt-hub-head-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 .gt-hub-hint {
   font-family: var(--font-board-mono);
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--muted-label);
+}
+
+/* Sound-effects toggle: off by default, persisted in localStorage. */
+.gt-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  color: var(--text-muted-3);
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.gt-sound-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+.gt-sound-toggle:hover {
+  border-color: rgba(52, 211, 153, 0.4);
+  color: var(--accent-bright);
+}
+.gt-sound-toggle.is-on {
+  color: var(--accent-bright);
+  background: color-mix(in srgb, var(--accent-bright) 12%, var(--control-bg));
+  border-color: color-mix(in srgb, var(--accent-bright) 40%, var(--control-border));
 }
 
 /* Brand mark + wordmark (hub only). */

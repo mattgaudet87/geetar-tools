@@ -86,3 +86,25 @@ export function MetronomeIcon() {
     </svg>
   )
 }
+
+/** Speaker with sound waves — the hub's sound-effects toggle, on state. */
+export function SoundOnIcon() {
+  return (
+    <svg {...base} aria-hidden>
+      <path d="M4 10 v4 h3.5 l4.5 4 V6 l-4.5 4 Z" />
+      <path d="M15.5 9 a5 5 0 0 1 0 6" />
+      <path d="M18 6.5 a9 9 0 0 1 0 11" />
+    </svg>
+  )
+}
+
+/** Speaker with an X — the hub's sound-effects toggle, off state. */
+export function SoundOffIcon() {
+  return (
+    <svg {...base} aria-hidden>
+      <path d="M4 10 v4 h3.5 l4.5 4 V6 l-4.5 4 Z" />
+      <line x1="15.5" y1="10" x2="20" y2="14" />
+      <line x1="20" y1="10" x2="15.5" y2="14" />
+    </svg>
+  )
+}

@@ -1,8 +1,9 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { Brand } from './Brand'
-import { playPedalSwitch } from './sfx'
+import { isSfxEnabled, playPedalSwitch, setSfxEnabled } from './sfx'
+import { SoundOffIcon, SoundOnIcon } from './icons'
 import { TOOLS } from '../tools/registry'
 
 /*
@@ -121,11 +122,31 @@ export function Hub() {
     return () => document.body.classList.remove('gt-board-bg')
   }, [])
 
+  const [sfxOn, setSfxOn] = useState(isSfxEnabled)
+
+  function toggleSfx() {
+    const next = !sfxOn
+    setSfxEnabled(next)
+    setSfxOn(next)
+  }
+
   return (
     <div className="gt-hub">
       <header className="gt-hub-head">
         <Brand />
-        <span className="gt-hub-hint">Stomp one to start</span>
+        <div className="gt-hub-head-right">
+          <span className="gt-hub-hint">Stomp one to start</span>
+          <button
+            type="button"
+            className={`gt-sound-toggle ${sfxOn ? 'is-on' : ''}`}
+            onClick={toggleSfx}
+            aria-pressed={sfxOn}
+            aria-label={sfxOn ? 'Sound effects on' : 'Sound effects off'}
+            title={sfxOn ? 'Sound effects on' : 'Sound effects off'}
+          >
+            {sfxOn ? <SoundOnIcon /> : <SoundOffIcon />}
+          </button>
+        </div>
       </header>
 
       <div className="gt-hub-grid">

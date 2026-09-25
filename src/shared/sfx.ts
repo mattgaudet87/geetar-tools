@@ -20,6 +20,35 @@ type SfxName = keyof typeof SOURCES
 
 const cache: Partial<Record<SfxName, HTMLAudioElement>> = {}
 
+/*
+ * Sound effects are off by default and persist across visits via
+ * localStorage. Toggled from the hub page (see Hub.tsx).
+ */
+const ENABLED_KEY = 'geetar-sfx-enabled'
+
+function readEnabled(): boolean {
+  try {
+    return localStorage.getItem(ENABLED_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
+let enabled = readEnabled()
+
+export function isSfxEnabled(): boolean {
+  return enabled
+}
+
+export function setSfxEnabled(next: boolean): void {
+  enabled = next
+  try {
+    localStorage.setItem(ENABLED_KEY, String(next))
+  } catch {
+    // Storage unavailable (private mode, etc.) — setting just won't persist.
+  }
+}
+
 /** Both samples played at a quarter of their original recorded volume. */
 const VOLUME = 0.25
 
@@ -55,6 +84,7 @@ const PEDAL_FALLBACK_MS = 1000
 
 /** The stompbox click. Call when entering or leaving a tool. */
 export function playPedalSwitch(): void {
+  if (!enabled) return
   const el = play('pedal')
   const ms =
     Number.isFinite(el.duration) && el.duration > 0
@@ -81,6 +111,7 @@ const METRO_LEAD_MS = 1000
  * over the next screen.
  */
 export function playMetroAfterPedal(): () => void {
+  if (!enabled) return () => {}
   if (metroTimer !== null) window.clearTimeout(metroTimer)
   const wait = Math.max(0, pedalEndsAt - performance.now() - METRO_LEAD_MS)
   metroTimer = window.setTimeout(() => {
