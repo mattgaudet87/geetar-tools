@@ -9,9 +9,10 @@ import { ChordFinder } from './ChordFinder'
 import { strum } from './audio'
 import {
   NOTES,
-  TUNING,
   CHORDS,
   CHORD_CATEGORIES,
+  TUNING_PRESETS,
+  TUNING_PRESET_NAMES,
   chordNotes,
   generateVoicings,
   type Voicing,
@@ -31,8 +32,13 @@ export function ChordsTool() {
   const [quality, setQuality] = useState('Major')
   const [sound, setSound] = useState(true)
   const [open, setOpen] = useState(true) // options card expanded?
+  const [tuningName, setTuningName] = useState('Standard')
 
-  const voicings = useMemo(() => generateVoicings(root, quality), [root, quality])
+  const tuning = TUNING_PRESETS[tuningName]
+  const voicings = useMemo(
+    () => generateVoicings(root, quality, tuning),
+    [root, quality, tuning],
+  )
   const notes = useMemo(() => chordNotes(root, quality), [root, quality])
   const symbol = NOTES[root] + CHORDS[quality].symbol
 
@@ -40,7 +46,7 @@ export function ChordsTool() {
     if (!sound) return
     const midis: number[] = []
     v.frets.forEach((f, s) => {
-      if (f != null) midis.push(TUNING[s] + f)
+      if (f != null) midis.push(tuning[s] + f)
     })
     strum(midis)
   }
@@ -68,7 +74,12 @@ export function ChordsTool() {
       </div>
 
       {view === 'finder' ? (
-        <ChordFinder sound={sound} onToggleSound={() => setSound((s) => !s)} />
+        <ChordFinder
+          sound={sound}
+          onToggleSound={() => setSound((s) => !s)}
+          tuningName={tuningName}
+          onTuningChange={setTuningName}
+        />
       ) : (
         <>
       {/* Picker — collapsible; root dropdown + 3 rows of compact chord chips */}
@@ -86,6 +97,20 @@ export function ChordsTool() {
           </button>
           <div className="ch-panel-head-right">
             {!open && <span className="ch-current">{symbol}</span>}
+            <div className="ch-unit">
+              <span className="gt-label">Tuning</span>
+              <select
+                className="gt-select"
+                value={tuningName}
+                onChange={(e) => setTuningName(e.target.value)}
+              >
+                {TUNING_PRESET_NAMES.map((p) => (
+                  <option key={p} value={p}>
+                    {p}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div className="ch-unit">
               <span className="gt-label">Sound</span>
               <button
@@ -181,7 +206,7 @@ export function ChordsTool() {
           <div className="ch-grid">
             {voicings.map((v, i) => (
               <div className="ch-cell" key={i}>
-                <ChordDiagram voicing={v} root={root} onPlay={() => play(v)} />
+                <ChordDiagram voicing={v} root={root} tuning={tuning} onPlay={() => play(v)} />
                 <span className="ch-cell-label">
                   {v.frets.some((f) => f === 0) ? 'Open' : `${v.position}fr`}
                 </span>

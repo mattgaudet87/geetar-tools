@@ -1,6 +1,13 @@
 import { Fragment, useMemo, useState } from 'react'
 import { strum } from './audio'
-import { NOTES, TUNING, CHORDS, findChords, generateVoicings } from './chords'
+import {
+  NOTES,
+  CHORDS,
+  TUNING_PRESETS,
+  TUNING_PRESET_NAMES,
+  findChords,
+  generateVoicings,
+} from './chords'
 
 /*
  * Reverse chord finder: tap notes on a fretboard (one per string) and the
@@ -17,22 +24,28 @@ const ROW_STRINGS = [5, 4, 3, 2, 1, 0]
 export function ChordFinder({
   sound,
   onToggleSound,
+  tuningName,
+  onTuningChange,
 }: {
   sound: boolean
   onToggleSound: () => void
+  tuningName: string
+  onTuningChange: (name: string) => void
 }) {
   const [capo, setCapo] = useState(0)
   // Selected fret per string (TUNING order low->high); null = muted.
   const [sel, setSel] = useState<(number | null)[]>(Array(6).fill(null))
 
+  const tuning = TUNING_PRESETS[tuningName]
+
   // Selected notes, lowest pitch first (the bass leads the chord naming).
   const picked = useMemo(() => {
     const out: { midi: number }[] = []
     sel.forEach((f, s) => {
-      if (f != null) out.push({ midi: TUNING[s] + f })
+      if (f != null) out.push({ midi: tuning[s] + f })
     })
     return out.sort((a, b) => a.midi - b.midi)
-  }, [sel])
+  }, [sel, tuning])
 
   const pcs = useMemo(() => {
     const seen = new Set<number>()
@@ -57,7 +70,7 @@ export function ChordFinder({
       next[s] = selecting ? f : null
       return next
     })
-    if (sound && selecting) strum([TUNING[s] + f])
+    if (sound && selecting) strum([tuning[s] + f])
   }
 
   function onCapo(c: number) {
@@ -72,11 +85,11 @@ export function ChordFinder({
 
   function playMatch(root: number, quality: string) {
     if (!sound) return
-    const v = generateVoicings(root, quality)[0]
+    const v = generateVoicings(root, quality, tuning)[0]
     if (!v) return
     const midis: number[] = []
     v.frets.forEach((f, s) => {
-      if (f != null) midis.push(TUNING[s] + f)
+      if (f != null) midis.push(tuning[s] + f)
     })
     strum(midis)
   }
@@ -113,6 +126,21 @@ export function ChordFinder({
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="ch-unit">
+            <span className="gt-label">Tuning</span>
+            <select
+              className="gt-select"
+              value={tuningName}
+              onChange={(e) => onTuningChange(e.target.value)}
+            >
+              {TUNING_PRESET_NAMES.map((p) => (
+                <option key={p} value={p}>
+                  {p}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="ch-unit">
@@ -178,7 +206,7 @@ export function ChordFinder({
             {ROW_STRINGS.map((s) => (
               <Fragment key={s}>
                 <div className="chf-slabel">
-                  {NOTES[(TUNING[s] + capo) % 12]}
+                  {NOTES[(tuning[s] + capo) % 12]}
                 </div>
                 {FRETS.map((f) => {
                   const behind = capo > 0 && f < capo
@@ -196,7 +224,7 @@ export function ChordFinder({
                     >
                       {selHere && (
                         <span className="chf-dot">
-                          {NOTES[(TUNING[s] + f) % 12]}
+                          {NOTES[(tuning[s] + f) % 12]}
                         </span>
                       )}
                     </button>
