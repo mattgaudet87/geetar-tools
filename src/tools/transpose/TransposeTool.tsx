@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { ToolHeader } from '../../shared/ToolHeader'
 import { TransposeIcon } from '../../shared/icons'
@@ -16,6 +16,12 @@ import {
   generateVoicings,
   type Voicing,
 } from '../chords/chords'
+import {
+  loadProgressions,
+  persistProgressions,
+  type ProgChord,
+  type ProgPreset,
+} from './presets'
 import './transpose.css'
 
 /*
@@ -28,11 +34,6 @@ import './transpose.css'
  *   new shape root  = transposed sound - new capo
  * Qualities never change when transposing.
  */
-
-interface ProgChord {
-  root: number
-  quality: string
-}
 
 const mod12 = (n: number) => ((n % 12) + 12) % 12
 
@@ -62,6 +63,20 @@ export function TransposeTool() {
   // kept in sync with prog by index — see addChord/removeChord.
   const [origVariant, setOrigVariant] = useState<number[]>([])
   const [shapeVariant, setShapeVariant] = useState<number[]>([])
+
+  // Saved progression presets (persisted in localStorage), shown in a
+  // slide-out side panel — mirrors the Scales tool's saved songs.
+  const [progs, setProgs] = useState<ProgPreset[]>(loadProgressions)
+  const [savedOpen, setSavedOpen] = useState(false)
+  const [saveOpen, setSaveOpen] = useState(false)
+  const [progName, setProgName] = useState('')
+  const [pendingDelete, setPendingDelete] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (pendingDelete === null) return
+    const t = setTimeout(() => setPendingDelete(null), 5000)
+    return () => clearTimeout(t)
+  }, [pendingDelete])
 
   // Guided-steps controls panel: which tab is showing, and which root's
   // quality dropdown is currently expanded (hover on desktop, tap on touch).
@@ -157,11 +172,81 @@ export function TransposeTool() {
     strum(midis)
   }
 
+  function progIsActive(p: ProgPreset): boolean {
+    return (
+      p.prog.length === prog.length &&
+      p.prog.every((c, i) => c.root === prog[i].root && c.quality === prog[i].quality) &&
+      p.capoFrom === capoFrom &&
+      p.steps === steps &&
+      p.capoTo === capoTo &&
+      p.tuningFrom === tuningFrom &&
+      p.tuningTo === tuningTo
+    )
+  }
+
+  function openSaveForm() {
+    setProgName(prog.length ? `${sym(prog[0].root, prog[0].quality)} progression` : 'Progression')
+    setSaveOpen(true)
+  }
+
+  function saveProg() {
+    const fallback = prog.length ? `${sym(prog[0].root, prog[0].quality)} progression` : 'Progression'
+    const name = progName.trim() || fallback
+    const entry: ProgPreset = {
+      name,
+      prog: prog.map((c) => ({ ...c })),
+      capoFrom,
+      steps,
+      capoTo,
+      tuningFrom,
+      tuningTo,
+    }
+    setProgs((prev) => {
+      const idx = prev.findIndex((p) => p.name === name)
+      const next = idx >= 0 ? prev.map((p, i) => (i === idx ? entry : p)) : [...prev, entry]
+      persistProgressions(next)
+      return next
+    })
+    setProgName('')
+    setSaveOpen(false)
+  }
+
+  function applyProg(p: ProgPreset) {
+    setProg(p.prog.map((c) => ({ ...c })))
+    setOrigVariant(p.prog.map(() => 0))
+    setShapeVariant(p.prog.map(() => 0))
+    setCapoFrom(p.capoFrom)
+    setSteps(p.steps)
+    setCapoTo(p.capoTo)
+    setTuningFrom(p.tuningFrom)
+    setTuningTo(p.tuningTo)
+  }
+
+  // Deleting is two-click: first click arms the button ("Delete?"), a second
+  // click within 5s confirms. Anything else lets it disarm.
+  function onDeleteClick(name: string) {
+    if (pendingDelete === name) {
+      setProgs((prev) => {
+        const next = prev.filter((p) => p.name !== name)
+        persistProgressions(next)
+        return next
+      })
+      setPendingDelete(null)
+    } else {
+      setPendingDelete(name)
+    }
+  }
+
+  function closeSaved() {
+    setSavedOpen(false)
+    setSaveOpen(false)
+  }
+
   return (
     <div className="tp-page" style={pageStyle}>
       <ToolHeader name="Transpose" icon={<TransposeIcon />} serial={theme.serial} />
 
-      {/* Toolbar — tab switcher */}
+      {/* Toolbar — tab switcher + Saved panel trigger */}
       <div className="tp-toolbar">
         <div className="tp-tabs">
           <button
@@ -177,12 +262,17 @@ export function TransposeTool() {
             Transpose
           </button>
         </div>
-        {!unchanged && prog.length > 0 && (
-          <div className="tp-count">
-            {steps > 0 ? `UP ${steps}` : steps < 0 ? `DOWN ${-steps}` : 'SAME PITCH'}
-            {steps !== 0 ? ` SEMITONE${Math.abs(steps) === 1 ? '' : 'S'}` : ''}
-          </div>
-        )}
+        <div className="tp-toolbar-right">
+          {!unchanged && prog.length > 0 && (
+            <div className="tp-count">
+              {steps > 0 ? `UP ${steps}` : steps < 0 ? `DOWN ${-steps}` : 'SAME PITCH'}
+              {steps !== 0 ? ` SEMITONE${Math.abs(steps) === 1 ? '' : 'S'}` : ''}
+            </div>
+          )}
+          <button className="tp-saved-btn" onClick={() => setSavedOpen(true)}>
+            <span aria-hidden="true">★</span> Saved
+          </button>
+        </div>
       </div>
 
       {/* Controls panel */}
@@ -524,6 +614,93 @@ export function TransposeTool() {
               </>
             )}
           </>
+        )}
+      </div>
+
+      {/* Saved side panel */}
+      {savedOpen && <div className="tp-panel-backdrop" onClick={closeSaved} />}
+      <div className={`tp-panel ${savedOpen ? 'is-open' : ''}`}>
+        <div className="tp-panel-head">
+          <span className="tp-panel-title">Saved</span>
+          <button
+            className="tp-panel-close"
+            aria-label="Close saved panel"
+            onClick={closeSaved}
+          >
+            ✕
+          </button>
+        </div>
+        <div className="tp-panel-list">
+          {progs.map((p) => (
+            <div
+              key={p.name}
+              className={`tp-panel-item ${progIsActive(p) ? 'is-active' : ''}`}
+            >
+              <button
+                className="tp-panel-load"
+                onClick={() => applyProg(p)}
+                title={p.prog.map((c) => sym(c.root, c.quality)).join(' – ')}
+              >
+                {p.name}
+              </button>
+              <button
+                className={`tp-panel-del ${pendingDelete === p.name ? 'is-armed' : ''}`}
+                aria-label={`Delete ${p.name}`}
+                onClick={() => onDeleteClick(p.name)}
+              >
+                {pendingDelete === p.name ? 'Delete?' : '×'}
+              </button>
+            </div>
+          ))}
+          {progs.length === 0 && (
+            <p className="tp-hint">No saved progressions yet.</p>
+          )}
+        </div>
+
+        {saveOpen ? (
+          <div className="tp-panel-save-form">
+            <input
+              className="tp-panel-save-input"
+              autoFocus
+              placeholder="Progression name"
+              value={progName}
+              onChange={(e) => setProgName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') saveProg()
+                if (e.key === 'Escape') {
+                  setSaveOpen(false)
+                  setProgName('')
+                }
+              }}
+            />
+            <div className="tp-panel-save-btnrow">
+              <button className="tp-panel-save-confirm" onClick={saveProg}>
+                Save
+              </button>
+              <button
+                className="tp-panel-save-cancel"
+                onClick={() => {
+                  setSaveOpen(false)
+                  setProgName('')
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="tp-panel-add"
+            onClick={openSaveForm}
+            disabled={prog.length === 0}
+            title={
+              prog.length === 0
+                ? 'Add chords to your progression first'
+                : 'Save the current progression, capo, shift and tuning'
+            }
+          >
+            + Save current
+          </button>
         )}
       </div>
     </div>

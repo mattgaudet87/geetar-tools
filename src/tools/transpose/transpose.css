@@ -31,7 +31,7 @@
   border-color: var(--accent);
 }
 
-/* ---- Toolbar — tab switcher ---- */
+/* ---- Toolbar — tab switcher + Saved trigger ---- */
 .tp-toolbar {
   display: flex;
   align-items: center;
@@ -43,6 +43,30 @@
 .tp-tabs {
   display: flex;
   gap: 8px;
+}
+.tp-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.tp-saved-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: 9px;
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink);
+  font-family: var(--font-board);
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.tp-saved-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .tp-tab {
   padding: 9px 16px;
@@ -531,6 +555,162 @@
   color: var(--accent);
 }
 
+/* ---- Saved side panel ---- */
+.tp-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 60;
+}
+.tp-panel {
+  position: fixed;
+  top: 0;
+  right: -340px;
+  width: 300px;
+  height: 100%;
+  background: var(--panel);
+  border-left: 1px solid var(--edge);
+  padding: 22px;
+  z-index: 61;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: right 220ms ease;
+  box-shadow: -16px 0 40px rgba(0, 0, 0, 0.35);
+}
+.tp-panel.is-open {
+  right: 0;
+}
+.tp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tp-panel-title {
+  font-family: var(--font-board);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink-hi);
+}
+.tp-panel-close {
+  background: transparent;
+  border: none;
+  color: var(--ink-dim);
+  font-size: 18px;
+}
+.tp-panel-close:hover {
+  color: var(--accent);
+}
+.tp-panel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+.tp-panel-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+}
+.tp-panel-item.is-active {
+  background: color-mix(in srgb, var(--finish) 45%, var(--panel-2) 55%);
+  border-color: color-mix(in srgb, var(--finish) 70%, white 30%);
+}
+.tp-panel-load {
+  background: transparent;
+  border: none;
+  color: var(--ink);
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 13px;
+  text-align: left;
+  flex: 1;
+}
+.tp-panel-item.is-active .tp-panel-load {
+  color: var(--ink-hi);
+}
+.tp-panel-del {
+  background: transparent;
+  border: none;
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 12px;
+}
+.tp-panel-del:hover {
+  color: #e08b86;
+}
+.tp-panel-del.is-armed {
+  color: #e08b86;
+}
+.tp-panel-add {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px dashed var(--edge-2);
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+.tp-panel-add:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.tp-panel-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.tp-panel-save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tp-panel-save-input {
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: var(--panel-2);
+  border: 1px solid var(--edge-2);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
+  font-size: 12.5px;
+}
+.tp-panel-save-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+.tp-panel-save-btnrow {
+  display: flex;
+  gap: 8px;
+}
+.tp-panel-save-confirm {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--finish);
+  border: 1px solid color-mix(in srgb, var(--finish) 70%, white 30%);
+  color: var(--ink-hi);
+  font-family: var(--font-board-mono);
+  font-weight: 700;
+  font-size: 12.5px;
+}
+.tp-panel-save-cancel {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid var(--edge-2);
+  color: var(--ink-dim);
+  font-family: var(--font-board-mono);
+  font-weight: 600;
+  font-size: 12.5px;
+}
+
 @media (max-width: 600px) {
   .tp-page {
     padding: 18px 16px 24px;
@@ -546,6 +726,10 @@
   }
   .tp-unit-right {
     margin-left: 0;
+  }
+  .tp-panel {
+    width: 86vw;
+    right: -90vw;
   }
 }
 @media (prefers-reduced-motion: reduce) {
