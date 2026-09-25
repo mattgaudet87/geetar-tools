@@ -487,6 +487,33 @@
   text-align: center;
 }
 
+.tp-cell-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-board-mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+}
+.tp-cell-nav button {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--panel);
+  border: 1px solid var(--edge-2);
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transition: border-color 140ms ease, color 140ms ease;
+}
+.tp-cell-nav button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .tp-legend {
   display: flex;
   align-items: center;

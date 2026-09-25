@@ -14,6 +14,7 @@ import {
   TUNING_PRESETS,
   TUNING_PRESET_NAMES,
   generateVoicings,
+  type Voicing,
 } from '../chords/chords'
 import './transpose.css'
 
@@ -57,6 +58,11 @@ export function TransposeTool() {
   const [tuningFrom, setTuningFrom] = useState('Standard')
   const [tuningTo, setTuningTo] = useState('Standard')
 
+  // Which voicing (of the ones generateVoicings finds) is showing per chord,
+  // kept in sync with prog by index — see addChord/removeChord.
+  const [origVariant, setOrigVariant] = useState<number[]>([])
+  const [shapeVariant, setShapeVariant] = useState<number[]>([])
+
   // Guided-steps controls panel: which tab is showing, and which root's
   // quality dropdown is currently expanded (hover on desktop, tap on touch).
   const [step, setStep] = useState<Step>('chord')
@@ -72,28 +78,58 @@ export function TransposeTool() {
     () => prog.map((c) => mod12(c.root + capoFrom + steps - capoTo)),
     [prog, capoFrom, steps, capoTo],
   )
-  const shapeVoicings = useMemo(
+  const shapeVoicingLists = useMemo(
     () =>
-      prog.map(
-        (c, i) =>
-          generateVoicings(shapeRoots[i], c.quality, TUNING_PRESETS[tuningTo])[0] ?? null,
-      ),
+      prog.map((c, i) => generateVoicings(shapeRoots[i], c.quality, TUNING_PRESETS[tuningTo])),
     [prog, shapeRoots, tuningTo],
   )
-  const origVoicings = useMemo(
-    () =>
-      prog.map((c) => generateVoicings(c.root, c.quality, TUNING_PRESETS[tuningFrom])[0] ?? null),
+  const origVoicingLists = useMemo(
+    () => prog.map((c) => generateVoicings(c.root, c.quality, TUNING_PRESETS[tuningFrom])),
     [prog, tuningFrom],
   )
+
+  function pick(list: Voicing[], idx: number): Voicing | null {
+    if (!list.length) return null
+    return list[((idx % list.length) + list.length) % list.length]
+  }
+
+  const shapeVoicings = prog.map((_, i) => pick(shapeVoicingLists[i], shapeVariant[i] ?? 0))
+  const origVoicings = prog.map((_, i) => pick(origVoicingLists[i], origVariant[i] ?? 0))
 
   const unchanged = steps === 0 && capoTo === capoFrom
 
   function addChord() {
     setProg((p) => [...p, { root, quality }])
+    setOrigVariant((v) => [...v, 0])
+    setShapeVariant((v) => [...v, 0])
   }
 
   function removeChord(i: number) {
     setProg((p) => p.filter((_, idx) => idx !== i))
+    setOrigVariant((v) => v.filter((_, idx) => idx !== i))
+    setShapeVariant((v) => v.filter((_, idx) => idx !== i))
+  }
+
+  function clearProg() {
+    setProg([])
+    setOrigVariant([])
+    setShapeVariant([])
+  }
+
+  function cycleOrig(i: number, dir: number) {
+    const len = origVoicingLists[i]?.length ?? 0
+    if (len < 2) return
+    setOrigVariant((v) =>
+      v.map((val, idx) => (idx === i ? (((val + dir) % len) + len) % len : val)),
+    )
+  }
+
+  function cycleShape(i: number, dir: number) {
+    const len = shapeVoicingLists[i]?.length ?? 0
+    if (len < 2) return
+    setShapeVariant((v) =>
+      v.map((val, idx) => (idx === i ? (((val + dir) % len) + len) % len : val)),
+    )
   }
 
   function playShape(i: number) {
@@ -287,7 +323,7 @@ export function TransposeTool() {
                         </button>
                       </span>
                     ))}
-                    <button className="tp-clear" onClick={() => setProg([])}>
+                    <button className="tp-clear" onClick={clearProg}>
                       Clear all
                     </button>
                   </div>
@@ -313,6 +349,25 @@ export function TransposeTool() {
                             onPlay={() => playOrig(i)}
                           />
                           <span className="tp-cell-label">{sym(c.root, c.quality)}</span>
+                          {origVoicingLists[i].length > 1 && (
+                            <div className="tp-cell-nav">
+                              <button
+                                onClick={() => cycleOrig(i, -1)}
+                                aria-label="Previous way to play this shape"
+                              >
+                                ‹
+                              </button>
+                              <span>
+                                {(origVariant[i] ?? 0) + 1}/{origVoicingLists[i].length}
+                              </span>
+                              <button
+                                onClick={() => cycleOrig(i, 1)}
+                                aria-label="Next way to play this shape"
+                              >
+                                ›
+                              </button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="tp-cell" key={i}>
@@ -423,11 +478,31 @@ export function TransposeTool() {
                         <ChordDiagram
                           voicing={shapeVoicings[i]!}
                           root={shapeRoots[i]}
+                          tuning={TUNING_PRESETS[tuningTo]}
                           onPlay={() => playShape(i)}
                         />
                         <span className="tp-cell-label">
                           {sym(shapeRoots[i], c.quality)}
                         </span>
+                        {shapeVoicingLists[i].length > 1 && (
+                          <div className="tp-cell-nav">
+                            <button
+                              onClick={() => cycleShape(i, -1)}
+                              aria-label="Previous way to play this shape"
+                            >
+                              ‹
+                            </button>
+                            <span>
+                              {(shapeVariant[i] ?? 0) + 1}/{shapeVoicingLists[i].length}
+                            </span>
+                            <button
+                              onClick={() => cycleShape(i, 1)}
+                              aria-label="Next way to play this shape"
+                            >
+                              ›
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="tp-cell" key={i}>
